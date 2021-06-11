@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 
-class Commit extends StatelessWidget {
+class PullRequest extends StatelessWidget {
   final String title;
   final String author;
   final String age;
 
-  const Commit({
+  const PullRequest({
     Key? key,
     required this.title,
     required this.author,
@@ -18,7 +18,7 @@ class Commit extends StatelessWidget {
       margin: const EdgeInsets.all(5.0),
       padding: const EdgeInsets.all(5.0),
       decoration: BoxDecoration(
-        border: Border.all(color: Colors.blueAccent),
+        border: Border.all(color: Colors.redAccent),
       ),
       child: Column(
         children: [

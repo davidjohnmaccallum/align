@@ -1,15 +1,13 @@
 import 'package:flutter/material.dart';
 
-class Commit extends StatelessWidget {
+class Ticket extends StatelessWidget {
   final String title;
-  final String author;
-  final String age;
+  final String owner;
 
-  const Commit({
+  const Ticket({
     Key? key,
     required this.title,
-    required this.author,
-    required this.age,
+    this.owner = 'Unassigned',
   }) : super(key: key);
 
   @override
@@ -18,7 +16,7 @@ class Commit extends StatelessWidget {
       margin: const EdgeInsets.all(5.0),
       padding: const EdgeInsets.all(5.0),
       decoration: BoxDecoration(
-        border: Border.all(color: Colors.blueAccent),
+        border: Border.all(color: Colors.greenAccent),
       ),
       child: Column(
         children: [
@@ -39,8 +37,7 @@ class Commit extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(author),
-                Text(age),
+                Text(owner),
               ],
             ),
           )

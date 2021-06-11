@@ -28,9 +28,9 @@ class MyHomePage extends StatelessWidget {
         scrollDirection: Axis.horizontal,
         child: Row(
           children: [
-            Vertical(),
-            Vertical(),
-            Vertical(),
+            Vertical(title: 'Tracking'),
+            Vertical(title: 'Drivers'),
+            Vertical(title: 'Facilities'),
           ],
         ),
       ),
