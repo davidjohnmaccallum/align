@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 
-class Ticket extends StatelessWidget {
+class TicketTile extends StatelessWidget {
   final String title;
   final String owner;
 
-  const Ticket({
+  const TicketTile({
     Key? key,
     required this.title,
     this.owner = 'Unassigned',

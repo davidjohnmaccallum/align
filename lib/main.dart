@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'components/vertical.dart';
+import 'components/team.dart';
 
 void main() {
   runApp(MyApp());
@@ -24,16 +24,48 @@ class MyHomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SingleChildScrollView(
-        scrollDirection: Axis.horizontal,
-        child: Row(
-          children: [
-            Vertical(title: 'Tracking'),
-            Vertical(title: 'Drivers'),
-            Vertical(title: 'Facilities'),
-          ],
-        ),
-      ),
+      body: SingleChildScrollView(scrollDirection: Axis.horizontal, child: getTeamsWidget()),
     );
+  }
+
+  Widget getTeamsWidget() {
+    return FutureBuilder<List<TeamWidget>>(
+      future: getTeams(),
+      initialData: [],
+      builder: (context, snapshot) {
+        return Row(
+          children: snapshot.data ?? [],
+        );
+      },
+    );
+  }
+
+  Future<List<TeamWidget>> getTeams() async {
+    return [
+      TeamWidget(
+        title: 'Tracking',
+        repoNames: [
+          'log-waybill-svc',
+          'log-order-injection-svc',
+          'log-courier-injection-svc',
+        ],
+      ),
+      TeamWidget(
+        title: 'Drivers',
+        repoNames: [
+          'log-waybill-svc',
+          'log-order-injection-svc',
+          'log-courier-injection-svc',
+        ],
+      ),
+      TeamWidget(
+        title: 'Facilities',
+        repoNames: [
+          'log-waybill-svc',
+          'log-order-injection-svc',
+          'log-courier-injection-svc',
+        ],
+      ),
+    ];
   }
 }

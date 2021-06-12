@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 
-class Commit extends StatelessWidget {
+class CommitTile extends StatelessWidget {
   final String title;
   final String author;
   final String age;
 
-  const Commit({
+  const CommitTile({
     Key? key,
     required this.title,
     required this.author,
