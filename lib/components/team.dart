@@ -1,12 +1,12 @@
 import 'package:align/components/repo.dart';
 import 'package:flutter/material.dart';
-import 'package:github/github.dart';
 
 class TeamWidget extends StatelessWidget {
   final String title;
   final List<String> repoNames;
 
-  const TeamWidget({Key? key, required this.title, required this.repoNames}) : super(key: key);
+  const TeamWidget({Key? key, required this.title, required this.repoNames})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -23,39 +23,9 @@ class TeamWidget extends StatelessWidget {
             alignment: Alignment.center,
             height: 40,
           ),
-          getReposWidget(),
+          ...repoNames.map((repoName) => RepoWidget(title: repoName))
         ],
       ),
     );
-  }
-
-  Widget getReposWidget() {
-    return FutureBuilder<List<RepoWidget>>(
-      future: getRepos(),
-      initialData: [],
-      builder: (context, snapshot) {
-        return Row(
-          children: snapshot.data ?? [],
-        );
-      },
-    );
-  }
-
-  Future<List<RepoWidget>> getRepos() async {
-    var github = GitHub(auth: Authentication.withToken('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'));
-
-    List<Repository> repos = [];
-    for (String repoName in repoNames) {
-      try {
-        Repository repo = await github.repositories.getRepository(RepositorySlug('mrdelivery', repoName));
-        repos.add(repo);
-      } catch (err) {
-        print(err);
-      }
-    }
-
-    return repos.map((repo) {
-      return RepoWidget(title: repo.fullName);
-    }).toList();
   }
 }
