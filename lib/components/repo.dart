@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:align/models/commit.dart';
+import 'package:align/models/pull_request.dart';
 import 'package:align/services/github_service.dart';
 
 import 'package:align/components/pull_request.dart';
@@ -51,7 +52,6 @@ class _RepoWidgetState extends State<RepoWidget> {
   Widget getTicketsWidget() {
     return FutureBuilder<List<TicketTile>>(
       future: getTickets(),
-      initialData: [],
       builder: (context, snapshot) {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -62,13 +62,22 @@ class _RepoWidgetState extends State<RepoWidget> {
   }
 
   Widget getPullRequestsWidget() {
-    return FutureBuilder<List<PullRequestTile>>(
-      future: getPullRequests(),
-      initialData: [],
+    return FutureBuilder<List<PullRequest>>(
+      future: gitHubService.listPullRequests(Platform.environment['GITHUB_ORG'] ?? '', widget.repoName, 10),
       builder: (context, snapshot) {
+        if (snapshot.hasError) {
+          return Container(child: Text("${snapshot.error}"));
+        }
+
         return Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: snapshot.data ?? [],
+          children: (snapshot.data ?? []).map((pr) {
+            return PullRequestTile(
+              title: pr.message,
+              author: pr.author,
+              age: pr.ago,
+            );
+          }).toList(),
         );
       },
     );
@@ -77,15 +86,14 @@ class _RepoWidgetState extends State<RepoWidget> {
   Widget getCommitsWidget() {
     return FutureBuilder<List<Commit>>(
       future: gitHubService.listCommits(Platform.environment['GITHUB_ORG'] ?? '', widget.repoName, 10),
-      initialData: [],
       builder: (context, snapshot) {
         if (snapshot.hasError) {
-          return Container();
+          return Container(child: Text("${snapshot.error}"));
         }
 
         return Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: snapshot.data!.map((commit) {
+          children: (snapshot.data ?? []).map((commit) {
             return CommitTile(
               title: commit.message,
               author: commit.author,

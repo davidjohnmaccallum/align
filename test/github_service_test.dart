@@ -16,7 +16,7 @@ void main() {
   });
 
   test('Get pull requests', () async {
-    var commits = await gitHubService.listCommits('davidjohnmaccallum', 'align', 3);
-    expect(commits.length, 3);
+    var prs = await gitHubService.listPullRequests('davidjohnmaccallum', 'align', 3);
+    expect(prs.length, 3);
   });
 }
