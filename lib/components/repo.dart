@@ -1,3 +1,8 @@
+import 'dart:io';
+
+import 'package:align/models/commit.dart';
+import 'package:align/services/github_service.dart';
+
 import 'package:align/components/pull_request.dart';
 import 'package:align/components/ticket.dart';
 import 'package:flutter/material.dart';
@@ -5,15 +10,17 @@ import 'package:flutter/material.dart';
 import 'commit.dart';
 
 class RepoWidget extends StatefulWidget {
-  final String title;
+  final String repoName;
 
-  const RepoWidget({Key? key, required this.title}) : super(key: key);
+  const RepoWidget({Key? key, required this.repoName}) : super(key: key);
 
   @override
   _RepoWidgetState createState() => _RepoWidgetState();
 }
 
 class _RepoWidgetState extends State<RepoWidget> {
+  GitHubService gitHubService = GitHubService(Platform.environment['GITHUB_TOKEN'] ?? '');
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -29,7 +36,7 @@ class _RepoWidgetState extends State<RepoWidget> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Container(
-            child: Text(widget.title),
+            child: Text(widget.repoName),
             alignment: Alignment.center,
             height: 40,
           ),
@@ -68,13 +75,23 @@ class _RepoWidgetState extends State<RepoWidget> {
   }
 
   Widget getCommitsWidget() {
-    return FutureBuilder<List<CommitTile>>(
-      future: getCommits(),
+    return FutureBuilder<List<Commit>>(
+      future: gitHubService.listCommits(Platform.environment['GITHUB_ORG'] ?? '', widget.repoName, 10),
       initialData: [],
       builder: (context, snapshot) {
+        if (snapshot.hasError) {
+          return Container();
+        }
+
         return Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: snapshot.data ?? [],
+          children: snapshot.data!.map((commit) {
+            return CommitTile(
+              title: commit.message,
+              author: commit.author,
+              age: commit.ago,
+            );
+          }).toList(),
         );
       },
     );
@@ -91,15 +108,6 @@ class _RepoWidgetState extends State<RepoWidget> {
     return [
       PullRequestTile(title: 'Add updateWaybill method', author: 'Louis', age: '3h'),
       PullRequestTile(title: 'Send BI event', author: 'Aphiwe', age: '8h'),
-    ];
-  }
-
-  Future<List<CommitTile>> getCommits() async {
-    return [
-      CommitTile(title: 'Add injectWaybill method', author: 'Aphiwe', age: '3d'),
-      CommitTile(title: 'Add getWaybill metric', author: 'Aphiwe', age: '4d'),
-      CommitTile(title: 'Tweak CPU settings', author: 'Aphiwe', age: '6d'),
-      CommitTile(title: 'Tweak scaling settings', author: 'Aphiwe', age: '8d'),
     ];
   }
 }
