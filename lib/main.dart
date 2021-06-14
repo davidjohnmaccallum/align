@@ -1,8 +1,12 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 
 import 'components/team.dart';
 
-void main() {
+void main() async {
+  if (Platform.environment['GITHUB_TOKEN'] == null) throw Exception("GITHUB_TOKEN env var not set");
+  if (Platform.environment['GITHUB_ORG'] == null) throw Exception("GITHUB_ORG env var not set");
   runApp(MyApp());
 }
 
@@ -24,7 +28,13 @@ class MyHomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SingleChildScrollView(scrollDirection: Axis.horizontal, child: getTeamsWidget()),
+      body: SingleChildScrollView(
+        scrollDirection: Axis.vertical,
+        child: SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: getTeamsWidget(),
+        ),
+      ),
     );
   }
 
@@ -48,22 +58,11 @@ class MyHomePage extends StatelessWidget {
           'log-waybill-svc',
           'log-order-injection-svc',
           'log-courier-injection-svc',
-        ],
-      ),
-      TeamWidget(
-        title: 'Drivers',
-        repoNames: [
-          'log-waybill-svc',
-          'log-order-injection-svc',
-          'log-courier-injection-svc',
-        ],
-      ),
-      TeamWidget(
-        title: 'Facilities',
-        repoNames: [
-          'log-waybill-svc',
-          'log-order-injection-svc',
-          'log-courier-injection-svc',
+          'log-courier-callback-svc',
+          'log-courier-api-bff',
+          'log-delivery-tracking-svc',
+          'log-delivery-event-producer',
+          'log-fnb-bff'
         ],
       ),
     ];

@@ -5,8 +5,7 @@ class TeamWidget extends StatelessWidget {
   final String title;
   final List<String> repoNames;
 
-  const TeamWidget({Key? key, required this.title, required this.repoNames})
-      : super(key: key);
+  const TeamWidget({Key? key, required this.title, required this.repoNames}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -23,7 +22,10 @@ class TeamWidget extends StatelessWidget {
             alignment: Alignment.center,
             height: 40,
           ),
-          ...repoNames.map((repoName) => RepoWidget(title: repoName))
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: repoNames.map((repoName) => RepoWidget(repoName: repoName)).toList(),
+          ),
         ],
       ),
     );

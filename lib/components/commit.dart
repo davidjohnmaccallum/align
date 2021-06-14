@@ -25,12 +25,7 @@ class CommitTile extends StatelessWidget {
           Row(
             children: [
               Flexible(
-                child: Text(
-                  title,
-                  softWrap: true,
-                  maxLines: 3,
-                  overflow: TextOverflow.ellipsis,
-                ),
+                child: Text(title, overflow: TextOverflow.visible),
               ),
             ],
           ),
