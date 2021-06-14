@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
 
-class TicketTile extends StatelessWidget {
+class IssueTile extends StatelessWidget {
   final String title;
-  final String owner;
+  final String author;
+  final String age;
 
-  const TicketTile({
+  const IssueTile({
     Key? key,
     required this.title,
-    this.owner = 'Unassigned',
+    required this.author,
+    required this.age,
   }) : super(key: key);
 
   @override
@@ -37,7 +39,8 @@ class TicketTile extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(owner),
+                Text(author),
+                Text(age),
               ],
             ),
           )

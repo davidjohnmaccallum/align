@@ -1,11 +1,13 @@
 import 'dart:io';
 
 import 'package:align/models/commit.dart';
+import 'package:align/models/issue.dart';
 import 'package:align/models/pull_request.dart';
 import 'package:align/services/github_service.dart';
 
 import 'package:align/components/pull_request.dart';
-import 'package:align/components/ticket.dart';
+import 'package:align/components/issue.dart';
+import 'package:align/services/jira_service.dart';
 import 'package:flutter/material.dart';
 
 import 'commit.dart';
@@ -21,6 +23,7 @@ class RepoWidget extends StatefulWidget {
 
 class _RepoWidgetState extends State<RepoWidget> {
   GitHubService gitHubService = GitHubService(Platform.environment['GITHUB_TOKEN'] ?? '');
+  JiraService jiraService = JiraService();
 
   @override
   Widget build(BuildContext context) {
@@ -50,12 +53,22 @@ class _RepoWidgetState extends State<RepoWidget> {
   }
 
   Widget getTicketsWidget() {
-    return FutureBuilder<List<TicketTile>>(
-      future: getTickets(),
+    return FutureBuilder<List<Issue>>(
+      future: jiraService.getIssuesByLabel(widget.repoName),
       builder: (context, snapshot) {
+        if (snapshot.hasError) {
+          return Container(child: Text("${snapshot.error}"));
+        }
+
         return Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: snapshot.data ?? [],
+          children: (snapshot.data ?? []).map((pr) {
+            return IssueTile(
+              title: pr.message,
+              author: pr.author,
+              age: pr.ago,
+            );
+          }).toList(),
         );
       },
     );
@@ -103,19 +116,5 @@ class _RepoWidgetState extends State<RepoWidget> {
         );
       },
     );
-  }
-
-  Future<List<TicketTile>> getTickets() async {
-    return [
-      TicketTile(title: 'Refactor data model'),
-      TicketTile(title: 'Add deleteWaybill method', owner: 'Aphiwe'),
-    ];
-  }
-
-  Future<List<PullRequestTile>> getPullRequests() async {
-    return [
-      PullRequestTile(title: 'Add updateWaybill method', author: 'Louis', age: '3h'),
-      PullRequestTile(title: 'Send BI event', author: 'Aphiwe', age: '8h'),
-    ];
   }
 }
