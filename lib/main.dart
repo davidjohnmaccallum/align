@@ -5,8 +5,10 @@ import 'package:flutter/material.dart';
 import 'components/team.dart';
 
 void main() async {
-  if (Platform.environment['GITHUB_TOKEN'] == null) throw Exception("GITHUB_TOKEN env var not set");
-  if (Platform.environment['GITHUB_ORG'] == null) throw Exception("GITHUB_ORG env var not set");
+  if (Platform.environment['ALIGN_GITHUB_TOKEN'] == null)
+    throw Exception("ALIGN_GITHUB_TOKEN env var not set");
+  if (Platform.environment['ALIGN_GITHUB_ORG'] == null)
+    throw Exception("ALIGN_GITHUB_ORG env var not set");
   runApp(MyApp());
 }
 

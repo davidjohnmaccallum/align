@@ -22,7 +22,8 @@ class RepoWidget extends StatefulWidget {
 }
 
 class _RepoWidgetState extends State<RepoWidget> {
-  GitHubService gitHubService = GitHubService(Platform.environment['GITHUB_TOKEN'] ?? '');
+  GitHubService gitHubService =
+      GitHubService(Platform.environment['ALIGN_GITHUB_TOKEN'] ?? '');
   JiraService jiraService = JiraService();
 
   @override
@@ -76,7 +77,8 @@ class _RepoWidgetState extends State<RepoWidget> {
 
   Widget getPullRequestsWidget() {
     return FutureBuilder<List<PullRequest>>(
-      future: gitHubService.listPullRequests(Platform.environment['GITHUB_ORG'] ?? '', widget.repoName, 10),
+      future: gitHubService.listPullRequests(
+          Platform.environment['ALIGN_GITHUB_ORG'] ?? '', widget.repoName, 10),
       builder: (context, snapshot) {
         if (snapshot.hasError) {
           return Container(child: Text("${snapshot.error}"));
@@ -98,7 +100,11 @@ class _RepoWidgetState extends State<RepoWidget> {
 
   Widget getCommitsWidget() {
     return FutureBuilder<List<Commit>>(
-      future: gitHubService.listCommits(Platform.environment['GITHUB_ORG'] ?? '', widget.repoName, 10),
+      future: gitHubService.listCommits(
+          Platform.environment['ALIGN_GITHUB_ORG'] ?? '',
+          widget.repoName,
+          'develop',
+          10),
       builder: (context, snapshot) {
         if (snapshot.hasError) {
           return Container(child: Text("${snapshot.error}"));
