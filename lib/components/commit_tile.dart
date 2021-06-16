@@ -11,43 +11,46 @@ class CommitTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.all(5.0),
-      padding: const EdgeInsets.all(5.0),
-      decoration: BoxDecoration(
-        border: Border.all(color: Colors.blueAccent),
-      ),
-      child: Column(
-        children: [
-          Row(
+    return Padding(
+      padding: EdgeInsets.all(8.0),
+      child: Material(
+        elevation: 3.0,
+        borderRadius: BorderRadius.all(Radius.circular(10.0)),
+        child: Container(
+          padding: EdgeInsets.all(9.0),
+          child: Column(
             children: [
-              Flexible(
-                child: Text(commit.message, overflow: TextOverflow.visible),
-              ),
-            ],
-          ),
-          Container(
-            margin: const EdgeInsets.only(top: 5.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: CircleAvatar(
-                    backgroundImage: NetworkImage(commit.avatar),
+              Row(
+                children: [
+                  Flexible(
+                    child: Text(commit.message, overflow: TextOverflow.visible),
                   ),
-                ),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.end,
+                ],
+              ),
+              Container(
+                margin: const EdgeInsets.only(top: 5.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(commit.author),
-                    Text(commit.ago),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: CircleAvatar(
+                        backgroundImage: NetworkImage(commit.avatar),
+                      ),
+                    ),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        Text(commit.author),
+                        Text(commit.ago),
+                      ],
+                    ),
                   ],
                 ),
-              ],
-            ),
-          )
-        ],
+              )
+            ],
+          ),
+        ),
       ),
     );
   }

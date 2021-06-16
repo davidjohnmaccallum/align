@@ -27,27 +27,31 @@ class _RepoWidgetState extends State<RepoWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.all(5.0),
-      padding: const EdgeInsets.all(5.0),
-      width: 300,
-      //margin: const EdgeInsets.only(left: 10.0, right: 10.0),
-      //padding: const EdgeInsets.all(3.0),
-      decoration: BoxDecoration(
-        border: Border.all(color: Colors.blueAccent),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Container(
-            child: Text(widget.repoName),
-            alignment: Alignment.center,
-            height: 40,
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Material(
+        elevation: 5,
+        borderRadius: BorderRadius.all(Radius.circular(10.0)),
+        child: Container(
+          margin: const EdgeInsets.all(5.0),
+          padding: const EdgeInsets.all(5.0),
+          width: 300,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Container(
+                child: Text(
+                  widget.repoName,
+                  style: Theme.of(context).textTheme.headline6,
+                ),
+                alignment: Alignment.center,
+              ),
+              getTicketsWidget(),
+              getPullRequestsWidget(),
+              getCommitsWidget()
+            ],
           ),
-          getTicketsWidget(),
-          getPullRequestsWidget(),
-          getCommitsWidget()
-        ],
+        ),
       ),
     );
   }

@@ -10,26 +10,28 @@ class TeamWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.all(10.0),
-      padding: const EdgeInsets.all(5.0),
-      decoration: BoxDecoration(
-        border: Border.all(color: Colors.blueAccent),
-      ),
-      child: Column(
-        children: [
-          Container(
-            child: Text(title),
-            alignment: Alignment.center,
-            height: 40,
-          ),
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: repoNames
-                .map((repoName) => RepoWidget(repoName: repoName))
-                .toList(),
-          ),
-        ],
+    return Material(
+      elevation: 20,
+      child: Container(
+        margin: const EdgeInsets.all(10.0),
+        padding: const EdgeInsets.all(5.0),
+        child: Column(
+          children: [
+            Container(
+              child: Text(
+                title,
+                style: Theme.of(context).textTheme.headline2,
+              ),
+              alignment: Alignment.center,
+            ),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: repoNames
+                  .map((repoName) => RepoWidget(repoName: repoName))
+                  .toList(),
+            ),
+          ],
+        ),
       ),
     );
   }

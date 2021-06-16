@@ -8,7 +8,7 @@ import 'package:http/http.dart' as http;
 class GitHubService {
   String token;
 
-  GitHubService(String token) : token = '';
+  GitHubService(String token) : token = token;
   GitHubService.anonymous() : token = '';
 
   Future<List<Commit>> listCommits(
@@ -45,7 +45,7 @@ class GitHubService {
         HttpHeaders.authorizationHeader: "Bearer $token",
       });
       if (response.statusCode != 200) {
-        print("$pullsUrl returned ${response.statusCode}");
+        print("$pullsUrl returned ${response.statusCode} and ${response.body}");
         return [];
       }
       List rawPulls = jsonDecode(response.body);

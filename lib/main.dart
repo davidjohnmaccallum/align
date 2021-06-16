@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:align/components/container_widget.dart';
 import 'package:flutter/material.dart';
 
 import 'components/team_widget.dart';
@@ -18,55 +19,8 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Flutter Demo',
-      theme: ThemeData.dark(),
-      home: MyHomePage(),
+      theme: ThemeData.light(),
+      home: ContainerWidget(),
     );
-  }
-}
-
-class MyHomePage extends StatelessWidget {
-  MyHomePage({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: SingleChildScrollView(
-        scrollDirection: Axis.vertical,
-        child: SingleChildScrollView(
-          scrollDirection: Axis.horizontal,
-          child: getTeamsWidget(),
-        ),
-      ),
-    );
-  }
-
-  Widget getTeamsWidget() {
-    return FutureBuilder<List<TeamWidget>>(
-      future: getTeams(),
-      initialData: [],
-      builder: (context, snapshot) {
-        return Row(
-          children: snapshot.data ?? [],
-        );
-      },
-    );
-  }
-
-  Future<List<TeamWidget>> getTeams() async {
-    return [
-      TeamWidget(
-        title: 'Tracking',
-        repoNames: [
-          'log-waybill-svc',
-          'log-order-injection-svc',
-          'log-courier-injection-svc',
-          'log-courier-callback-svc',
-          'log-courier-api-bff',
-          'log-delivery-tracking-svc',
-          'log-delivery-event-producer',
-          'log-fnb-bff'
-        ],
-      ),
-    ];
   }
 }
