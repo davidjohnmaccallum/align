@@ -6,7 +6,7 @@ class Commit {
   String avatar;
   String ago;
 
-  Commit.fromGitHub(Map<String, dynamic> commit)
+  Commit.fromJson(Map<String, dynamic> commit)
       : message = commit['commit']?['message'] ?? '',
         author = commit['commit']?['author']?['name'] ?? '',
         avatar = commit['author']?['avatar_url'] ?? '',

@@ -1,12 +1,18 @@
 import '../utils.dart';
 
 class Issue {
-  String message;
-  String author;
+  String summary;
+  String reporterName;
+  String reporterAvatar;
   String ago;
 
-  Issue.fromJira(issue)
-      : message = '',
-        author = '',
-        ago = getAgo(null);
+  Issue.fromJson(issue)
+      : summary = issue['fields']?['summary'] ?? '',
+        reporterName = issue['fields']?['reporter']?['displayName'] ?? '',
+        reporterAvatar =
+            issue['fields']?['reporter']?['avatarUrls']?['32x32'] ?? '',
+        ago = getAgoFromStr(issue['fields']?['created']);
+
+  toString() =>
+      "When: $ago. Who: $reporterName. Avatar: $reporterAvatar. What: $summary.";
 }

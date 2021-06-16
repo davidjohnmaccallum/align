@@ -1,36 +1,24 @@
+import 'package:align/components/list_item_widget.dart';
+import 'package:align/models/issue.dart';
 import 'package:flutter/material.dart';
 
 class IssueTile extends StatelessWidget {
-  final String title;
-  final String author;
-  final String age;
+  final Issue issue;
 
   const IssueTile({
     Key? key,
-    required this.title,
-    required this.author,
-    required this.age,
+    required this.issue,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.all(5.0),
-      padding: const EdgeInsets.all(5.0),
-      decoration: BoxDecoration(
-        border: Border.all(color: Colors.greenAccent),
-      ),
+    return ListItemWidget(
       child: Column(
         children: [
           Row(
             children: [
               Flexible(
-                child: Text(
-                  title,
-                  softWrap: true,
-                  maxLines: 3,
-                  overflow: TextOverflow.ellipsis,
-                ),
+                child: Text(issue.summary, overflow: TextOverflow.visible),
               ),
             ],
           ),
@@ -39,8 +27,19 @@ class IssueTile extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(author),
-                Text(age),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: CircleAvatar(
+                    backgroundImage: NetworkImage(issue.reporterAvatar),
+                  ),
+                ),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Text(issue.reporterName),
+                    Text(issue.ago),
+                  ],
+                ),
               ],
             ),
           )

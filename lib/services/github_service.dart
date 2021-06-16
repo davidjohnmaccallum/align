@@ -8,7 +8,7 @@ import 'package:http/http.dart' as http;
 class GitHubService {
   String token;
 
-  GitHubService(String token) : token = token;
+  GitHubService(this.token);
   GitHubService.anonymous() : token = '';
 
   Future<List<Commit>> listCommits(
@@ -26,7 +26,7 @@ class GitHubService {
       List rawCommits = jsonDecode(response.body);
       List<Commit> commits = rawCommits
           .take(limit)
-          .map((rawCommit) => Commit.fromGitHub(rawCommit))
+          .map((rawCommit) => Commit.fromJson(rawCommit))
           .toList();
       return commits;
     } catch (err, stacktrace) {
@@ -51,7 +51,7 @@ class GitHubService {
       List rawPulls = jsonDecode(response.body);
       List<PullRequest> pulls = rawPulls
           .take(limit)
-          .map((rawPull) => PullRequest.fromGitHub(rawPull))
+          .map((rawPull) => PullRequest.fromJson(rawPull))
           .toList();
       return pulls;
     } catch (err, stacktrace) {

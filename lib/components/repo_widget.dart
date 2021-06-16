@@ -23,7 +23,9 @@ class RepoWidget extends StatefulWidget {
 class _RepoWidgetState extends State<RepoWidget> {
   GitHubService gitHubService =
       GitHubService(Platform.environment['ALIGN_GITHUB_TOKEN'] ?? '');
-  JiraService jiraService = JiraService();
+  JiraService jiraService = JiraService(
+      Platform.environment['ALIGN_JIRA_USERNAME'] ?? '',
+      Platform.environment['ALIGN_JIRA_PASSWORD'] ?? '');
 
   @override
   Widget build(BuildContext context) {
@@ -46,7 +48,7 @@ class _RepoWidgetState extends State<RepoWidget> {
                 ),
                 alignment: Alignment.center,
               ),
-              getTicketsWidget(),
+              getIssuesWidget(),
               getPullRequestsWidget(),
               getCommitsWidget()
             ],
@@ -56,9 +58,9 @@ class _RepoWidgetState extends State<RepoWidget> {
     );
   }
 
-  Widget getTicketsWidget() {
+  Widget getIssuesWidget() {
     return FutureBuilder<List<Issue>>(
-      future: jiraService.getIssuesByLabel(widget.repoName),
+      future: jiraService.findIssuesByLabel(widget.repoName),
       builder: (context, snapshot) {
         if (snapshot.hasError) {
           return Container(child: Text("${snapshot.error}"));
@@ -66,12 +68,8 @@ class _RepoWidgetState extends State<RepoWidget> {
 
         return Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: (snapshot.data ?? []).map((pr) {
-            return IssueTile(
-              title: pr.message,
-              author: pr.author,
-              age: pr.ago,
-            );
+          children: (snapshot.data ?? []).map((issue) {
+            return IssueTile(issue: issue);
           }).toList(),
         );
       },

@@ -6,7 +6,7 @@ class PullRequest {
   String avatar;
   String ago;
 
-  PullRequest.fromGitHub(Map<String, dynamic> pull)
+  PullRequest.fromJson(Map<String, dynamic> pull)
       : title = pull['title'] ?? '',
         author = pull['user']?['login'] ?? '',
         avatar = pull['user']?['avatar_url'] ?? '',

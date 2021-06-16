@@ -10,6 +10,10 @@ void main() async {
     throw Exception("ALIGN_GITHUB_TOKEN env var not set");
   if (Platform.environment['ALIGN_GITHUB_ORG'] == null)
     throw Exception("ALIGN_GITHUB_ORG env var not set");
+  if (Platform.environment['ALIGN_JIRA_USERNAME'] == null)
+    throw Exception("ALIGN_JIRA_USERNAME env var not set");
+  if (Platform.environment['ALIGN_JIRA_PASSWORD'] == null)
+    throw Exception("ALIGN_JIRA_PASSWORD env var not set");
   runApp(MyApp());
 }
 
