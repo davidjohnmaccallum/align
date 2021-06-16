@@ -1,5 +1,3 @@
-import 'package:github/github.dart';
-
 import '../utils.dart';
 
 class Commit {
@@ -7,8 +5,10 @@ class Commit {
   String author;
   String ago;
 
-  Commit.fromGitHub(RepositoryCommit commit)
-      : message = commit.commit?.message ?? '',
-        author = commit.commit?.author?.name ?? '',
-        ago = getAgo(commit.commit?.author?.date);
+  Commit.fromGitHub(Map<String, dynamic> commit)
+      : message = commit['commit']?['message'] ?? '',
+        author = commit['commit']?['author']?['name'] ?? '',
+        ago = getAgoFromStr(commit['commit']?['author']?['date']);
+
+  toString() => "When: $ago. Who: $author. What: $message";
 }

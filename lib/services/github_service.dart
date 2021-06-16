@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:align/models/commit.dart';
@@ -28,16 +29,14 @@ class GitHubService {
         print("$url returned ${response.statusCode}");
         return [];
       }
-      print(response.body);
-      return [];
-      // return await github.repositories
-      //     .listCommits(gh.RepositorySlug(org, repoName))
-      //     .take(limit)
-      //     .map((it) => Commit.fromGitHub(it))
-      //     .toList();
-
-    } catch (err) {
+      var rawCommits = jsonDecode(response.body);
+      List<Commit> commits =
+          rawCommits.map<Commit>((rawCommit) => Commit.fromGitHub(rawCommit));
+      print(commits[0]);
+      return commits;
+    } catch (err, stacktrace) {
       print(err);
+      print(stacktrace);
       return [];
     }
   }
