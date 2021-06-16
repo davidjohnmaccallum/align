@@ -1,14 +1,14 @@
-import 'package:github/github.dart' as gh;
-
 import '../utils.dart';
 
 class PullRequest {
-  String message;
+  String title;
   String author;
+  String avatar;
   String ago;
 
-  PullRequest.fromGitHub(gh.PullRequest pr)
-      : message = [pr.title, pr.body].where((it) => it != null).join("\n"),
-        author = pr.user?.name ?? '',
-        ago = getAgo(pr.createdAt);
+  PullRequest.fromGitHub(Map<String, dynamic> pull)
+      : title = pull['title'] ?? '',
+        author = pull['user']?['login'] ?? '',
+        avatar = pull['user']?['avatar_url'] ?? '',
+        ago = getAgoFromStr(pull['created_at']);
 }

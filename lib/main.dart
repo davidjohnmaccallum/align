@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 
-import 'components/team.dart';
+import 'components/team_widget.dart';
 
 void main() async {
   if (Platform.environment['ALIGN_GITHUB_TOKEN'] == null)

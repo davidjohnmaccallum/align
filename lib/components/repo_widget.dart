@@ -1,16 +1,15 @@
 import 'dart:io';
 
+import 'package:align/components/commit_tile.dart';
 import 'package:align/models/commit.dart';
 import 'package:align/models/issue.dart';
 import 'package:align/models/pull_request.dart';
 import 'package:align/services/github_service.dart';
 
-import 'package:align/components/pull_request.dart';
-import 'package:align/components/issue.dart';
+import 'package:align/components/pull_request_tile.dart';
+import 'package:align/components/issue_tile.dart';
 import 'package:align/services/jira_service.dart';
 import 'package:flutter/material.dart';
-
-import 'commit.dart';
 
 class RepoWidget extends StatefulWidget {
   final String repoName;
@@ -86,12 +85,8 @@ class _RepoWidgetState extends State<RepoWidget> {
 
         return Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: (snapshot.data ?? []).map((pr) {
-            return PullRequestTile(
-              title: pr.message,
-              author: pr.author,
-              age: pr.ago,
-            );
+          children: (snapshot.data ?? []).map((pull) {
+            return PullRequestTile(pull: pull);
           }).toList(),
         );
       },
@@ -113,11 +108,7 @@ class _RepoWidgetState extends State<RepoWidget> {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: (snapshot.data ?? []).map((commit) {
-            return CommitTile(
-              title: commit.message,
-              author: commit.author,
-              age: commit.ago,
-            );
+            return CommitTile(commit: commit);
           }).toList(),
         );
       },

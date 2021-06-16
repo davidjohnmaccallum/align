@@ -1,15 +1,12 @@
+import 'package:align/models/commit.dart';
 import 'package:flutter/material.dart';
 
 class CommitTile extends StatelessWidget {
-  final String title;
-  final String author;
-  final String age;
+  final Commit commit;
 
   const CommitTile({
     Key? key,
-    required this.title,
-    required this.author,
-    required this.age,
+    required this.commit,
   }) : super(key: key);
 
   @override
@@ -25,7 +22,7 @@ class CommitTile extends StatelessWidget {
           Row(
             children: [
               Flexible(
-                child: Text(title, overflow: TextOverflow.visible),
+                child: Text(commit.message, overflow: TextOverflow.visible),
               ),
             ],
           ),
@@ -34,8 +31,19 @@ class CommitTile extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(author),
-                Text(age),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: CircleAvatar(
+                    backgroundImage: NetworkImage(commit.avatar),
+                  ),
+                ),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Text(commit.author),
+                    Text(commit.ago),
+                  ],
+                ),
               ],
             ),
           )

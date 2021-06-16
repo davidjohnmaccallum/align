@@ -1,11 +1,12 @@
-import 'package:align/components/repo.dart';
+import 'package:align/components/repo_widget.dart';
 import 'package:flutter/material.dart';
 
 class TeamWidget extends StatelessWidget {
   final String title;
   final List<String> repoNames;
 
-  const TeamWidget({Key? key, required this.title, required this.repoNames}) : super(key: key);
+  const TeamWidget({Key? key, required this.title, required this.repoNames})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -24,7 +25,9 @@ class TeamWidget extends StatelessWidget {
           ),
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
-            children: repoNames.map((repoName) => RepoWidget(repoName: repoName)).toList(),
+            children: repoNames
+                .map((repoName) => RepoWidget(repoName: repoName))
+                .toList(),
           ),
         ],
       ),

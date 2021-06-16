@@ -1,15 +1,12 @@
+import 'package:align/models/pull_request.dart';
 import 'package:flutter/material.dart';
 
 class PullRequestTile extends StatelessWidget {
-  final String title;
-  final String author;
-  final String age;
+  final PullRequest pull;
 
   const PullRequestTile({
     Key? key,
-    required this.title,
-    required this.author,
-    required this.age,
+    required this.pull,
   }) : super(key: key);
 
   @override
@@ -26,7 +23,7 @@ class PullRequestTile extends StatelessWidget {
             children: [
               Flexible(
                 child: Text(
-                  title,
+                  pull.title,
                   softWrap: true,
                   maxLines: 3,
                   overflow: TextOverflow.ellipsis,
@@ -39,8 +36,19 @@ class PullRequestTile extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(author),
-                Text(age),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: CircleAvatar(
+                    backgroundImage: NetworkImage(pull.avatar),
+                  ),
+                ),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Text(pull.author),
+                    Text(pull.ago),
+                  ],
+                ),
               ],
             ),
           )
