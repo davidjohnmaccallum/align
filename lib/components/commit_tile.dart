@@ -1,6 +1,9 @@
 import 'package:align/components/list_item_widget.dart';
 import 'package:align/models/commit.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class CommitTile extends StatelessWidget {
   final Commit commit;
@@ -15,6 +18,34 @@ class CommitTile extends StatelessWidget {
     return ListItemWidget(
       child: Column(
         children: [
+          Padding(
+            padding: const EdgeInsets.only(bottom: 8.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Flexible(
+                  child: RichText(
+                    text: TextSpan(
+                      text: commit.sha.substring(0, 7),
+                      style: new TextStyle(color: Colors.blue),
+                      recognizer: new TapGestureRecognizer()
+                        ..onTap = () {
+                          launch(commit.url);
+                        },
+                    ),
+                  ),
+                ),
+                SizedBox(
+                  height: 20,
+                  width: 20,
+                  child: SvgPicture.asset(
+                    'assets/icons/commit.svg',
+                    semanticsLabel: 'Commit Logo',
+                  ),
+                ),
+              ],
+            ),
+          ),
           Row(
             children: [
               Flexible(

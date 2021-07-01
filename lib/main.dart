@@ -1,9 +1,8 @@
 import 'dart:io';
 
-import 'package:align/components/container_widget.dart';
+import 'package:align/pages/main_page.dart';
+import 'package:align/pages/settings_page.dart';
 import 'package:flutter/material.dart';
-
-import 'components/team_widget.dart';
 
 void main() async {
   if (Platform.environment['ALIGN_GITHUB_TOKEN'] == null)
@@ -22,9 +21,10 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'Align',
       theme: ThemeData.light(),
-      home: ContainerWidget(),
+      home: MainPage(),
+      // home: SettingsPage(),
     );
   }
 }
