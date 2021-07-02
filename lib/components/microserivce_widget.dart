@@ -1,32 +1,23 @@
-import 'dart:io';
-
 import 'package:align/components/commit_tile.dart';
 import 'package:align/models/commit.dart';
 import 'package:align/models/issue.dart';
+import 'package:align/models/microservice.dart';
 import 'package:align/models/pull_request.dart';
-import 'package:align/services/github_service.dart';
 
 import 'package:align/components/pull_request_tile.dart';
 import 'package:align/components/issue_tile.dart';
-import 'package:align/services/jira_service.dart';
 import 'package:flutter/material.dart';
 
-class RepoWidget extends StatefulWidget {
-  final String repoName;
+class MicroserviceWidget extends StatefulWidget {
+  final Microservice microservice;
 
-  const RepoWidget({Key? key, required this.repoName}) : super(key: key);
+  const MicroserviceWidget(this.microservice, {Key? key}) : super(key: key);
 
   @override
   _RepoWidgetState createState() => _RepoWidgetState();
 }
 
-class _RepoWidgetState extends State<RepoWidget> {
-  GitHubService gitHubService =
-      GitHubService(Platform.environment['ALIGN_GITHUB_TOKEN'] ?? '');
-  JiraService jiraService = JiraService(
-      Platform.environment['ALIGN_JIRA_USERNAME'] ?? '',
-      Platform.environment['ALIGN_JIRA_PASSWORD'] ?? '');
-
+class _RepoWidgetState extends State<MicroserviceWidget> {
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -43,7 +34,7 @@ class _RepoWidgetState extends State<RepoWidget> {
             children: [
               Container(
                 child: Text(
-                  widget.repoName,
+                  widget.microservice.name,
                   style: Theme.of(context).textTheme.headline6,
                 ),
                 alignment: Alignment.center,
@@ -60,7 +51,7 @@ class _RepoWidgetState extends State<RepoWidget> {
 
   Widget getIssuesWidget() {
     return FutureBuilder<List<Issue>>(
-      future: jiraService.findIssuesByLabel(widget.repoName),
+      future: widget.microservice.issues,
       builder: (context, snapshot) {
         if (snapshot.hasError) {
           return Container(child: Text("${snapshot.error}"));
@@ -78,8 +69,7 @@ class _RepoWidgetState extends State<RepoWidget> {
 
   Widget getPullRequestsWidget() {
     return FutureBuilder<List<PullRequest>>(
-      future: gitHubService.listPullRequests(
-          Platform.environment['ALIGN_GITHUB_ORG'] ?? '', widget.repoName, 10),
+      future: widget.microservice.pullRequests,
       builder: (context, snapshot) {
         if (snapshot.hasError) {
           return Container(child: Text("${snapshot.error}"));
@@ -97,11 +87,7 @@ class _RepoWidgetState extends State<RepoWidget> {
 
   Widget getCommitsWidget() {
     return FutureBuilder<List<Commit>>(
-      future: gitHubService.listCommits(
-          Platform.environment['ALIGN_GITHUB_ORG'] ?? '',
-          widget.repoName,
-          'develop',
-          10),
+      future: widget.microservice.commits,
       builder: (context, snapshot) {
         if (snapshot.hasError) {
           return Container(child: Text("${snapshot.error}"));

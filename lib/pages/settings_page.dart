@@ -1,61 +1,130 @@
+import 'package:align/services/settings_service.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-class SettingsPage extends StatelessWidget {
-  const SettingsPage({Key? key}) : super(key: key);
+class SettingsPage extends StatefulWidget {
+  SettingsPage({Key? key}) : super(key: key);
+
+  @override
+  _SettingsPageState createState() => _SettingsPageState();
+}
+
+class _SettingsPageState extends State<SettingsPage> {
+  var _gitHubTokenController = TextEditingController();
+  var _gitHubOrganisationController = TextEditingController();
+  var _jiraUsernameController = TextEditingController();
+  var _jiraPasswordController = TextEditingController();
+  Future<SettingsService> _settingsService = SettingsService.getInstance();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SingleChildScrollView(
-        child: Container(
-          margin: EdgeInsets.only(top: 20, left: 20, right: 20),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Padding(
-                padding: const EdgeInsets.only(bottom: 8.0),
-                child: Text(
-                  "Settings",
-                  style: Theme.of(context).textTheme.headline4,
+      body: FutureBuilder<SettingsService>(
+        future: _settingsService,
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            var settingsService = snapshot.data!;
+            _gitHubTokenController.text = settingsService.getGitHubToken();
+            _gitHubOrganisationController.text =
+                settingsService.getGitHubOrganisation();
+            _jiraUsernameController.text = settingsService.getJiraUsername();
+            _jiraPasswordController.text = settingsService.getJiraPassword();
+
+            _gitHubTokenController.addListener(() {
+              settingsService.setGitHubToken(_gitHubTokenController.text);
+            });
+            _gitHubOrganisationController.addListener(() {
+              settingsService
+                  .setGitHubOrganisation(_gitHubOrganisationController.text);
+            });
+            _jiraUsernameController.addListener(() {
+              settingsService.setJiraUsername(_jiraUsernameController.text);
+            });
+            _jiraPasswordController.addListener(() {
+              settingsService.setJiraPassword(_jiraPasswordController.text);
+            });
+
+            return Stack(
+              children: [
+                Container(
+                  margin: const EdgeInsets.all(50.0),
+                  child: IconButton(
+                    iconSize: 50,
+                    alignment: Alignment.center,
+                    icon: Icon(
+                      Icons.arrow_back_outlined,
+                      size: 50,
+                      color: Colors.grey,
+                    ),
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                  ),
                 ),
-              ),
-              buildSetting(
-                "GitHub Token",
-                buildGitHubTokenDetails(context),
-                "Enter GitHub token",
-                context,
-              ),
-              buildSetting(
-                "GitHub Organisation",
-                buildGitHubOrganisationDetails(context),
-                "Enter GitHub organisation",
-                context,
-              ),
-              buildSetting(
-                "JIRA Username",
-                buildJiraUsernameDetails(context),
-                "Enter JIRA username",
-                context,
-              ),
-              buildSetting(
-                "JIRA Password",
-                buildJiraPasswordDetails(context),
-                "Enter JIRA password",
-                context,
-              ),
-            ],
-          ),
-        ),
+                Center(
+                  child: SingleChildScrollView(
+                    child: Container(
+                      width: 700,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.only(bottom: 16.0),
+                            child: Text(
+                              "Settings",
+                              style: Theme.of(context).textTheme.headline2,
+                            ),
+                          ),
+                          buildSetting(
+                            "GitHub Token",
+                            buildGitHubTokenDetails(context),
+                            "Enter GitHub token",
+                            _gitHubTokenController,
+                            context,
+                          ),
+                          buildSetting(
+                            "GitHub Organisation",
+                            Text(
+                                "The GitHub organisation to which your repos belong. You can find this in your GitHub repo URL here: https://github.com/organisation-name/repo-name."),
+                            "Enter GitHub organisation",
+                            _gitHubOrganisationController,
+                            context,
+                          ),
+                          buildSetting(
+                            "JIRA Username",
+                            Text("The JIRA username."),
+                            "Enter JIRA username",
+                            _jiraUsernameController,
+                            context,
+                          ),
+                          buildSetting(
+                            "JIRA Password",
+                            Text(
+                                "The JIRA password. Don't worry, this is only stored and used locally to access the JIRA issues for your microservices."),
+                            "Enter JIRA password",
+                            _jiraPasswordController,
+                            context,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            );
+          } else {
+            return Container();
+          }
+        },
       ),
     );
   }
 
-  Widget buildSetting(
-      String name, Widget details, String hintText, BuildContext context) {
+  Widget buildSetting(String name, Widget details, String hintText,
+      TextEditingController controller, BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 8.0),
+      padding: const EdgeInsets.only(bottom: 16.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -72,6 +141,7 @@ class SettingsPage extends StatelessWidget {
               border: OutlineInputBorder(),
               hintText: hintText,
             ),
+            controller: controller,
           ),
         ],
       ),
@@ -113,13 +183,4 @@ class SettingsPage extends StatelessWidget {
       ),
     );
   }
-
-  Widget buildGitHubOrganisationDetails(BuildContext context) => Text(
-      "The GitHub organisation to which your repos belong. You can find this in your GitHub repo URL here: https://github.com/organisation-name/repo-name.");
-
-  Widget buildJiraUsernameDetails(BuildContext context) =>
-      Text("The JIRA username.");
-
-  Widget buildJiraPasswordDetails(BuildContext context) => Text(
-      "The JIRA password. Don't worry, this is only stored and used locally to access the JIRA issues for your microservices.");
 }

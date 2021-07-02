@@ -1,12 +1,11 @@
-import 'package:align/components/repo_widget.dart';
+import 'package:align/components/microserivce_widget.dart';
+import 'package:align/models/team.dart';
 import 'package:flutter/material.dart';
 
 class TeamWidget extends StatelessWidget {
-  final String title;
-  final List<String> repoNames;
+  final Team team;
 
-  const TeamWidget({Key? key, required this.title, required this.repoNames})
-      : super(key: key);
+  const TeamWidget(this.team, {Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -19,15 +18,15 @@ class TeamWidget extends StatelessWidget {
           children: [
             Container(
               child: Text(
-                title,
+                team.name,
                 style: Theme.of(context).textTheme.headline2,
               ),
               alignment: Alignment.center,
             ),
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: repoNames
-                  .map((repoName) => RepoWidget(repoName: repoName))
+              children: team.microservices
+                  .map((microservice) => MicroserviceWidget(microservice))
                   .toList(),
             ),
           ],

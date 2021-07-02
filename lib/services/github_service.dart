@@ -3,17 +3,17 @@ import 'dart:io';
 
 import 'package:align/models/commit.dart';
 import 'package:align/models/pull_request.dart';
+import 'package:align/services/settings_service.dart';
 import 'package:http/http.dart' as http;
 
 class GitHubService {
-  String token;
-
-  GitHubService(this.token);
-  GitHubService.anonymous() : token = '';
-
   Future<List<Commit>> listCommits(
-      String org, String repoName, String branch, int limit) async {
+      String repoName, String branch, int limit) async {
     try {
+      var settingsService = await SettingsService.getInstance();
+      var token = settingsService.getGitHubToken();
+      var org = settingsService.getGitHubOrganisation();
+
       var url = Uri.parse(
           "https://api.github.com/repos/$org/$repoName/commits?sha=$branch");
       var response = await http.get(url, headers: {
@@ -36,9 +36,12 @@ class GitHubService {
     }
   }
 
-  Future<List<PullRequest>> listPullRequests(
-      String org, String repoName, int limit) async {
+  Future<List<PullRequest>> listPullRequests(String repoName, int limit) async {
     try {
+      var settingsService = await SettingsService.getInstance();
+      var token = settingsService.getGitHubToken();
+      var org = settingsService.getGitHubOrganisation();
+
       var pullsUrl =
           Uri.parse("https://api.github.com/repos/$org/$repoName/pulls");
       var response = await http.get(pullsUrl, headers: {
