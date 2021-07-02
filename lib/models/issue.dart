@@ -1,3 +1,8 @@
+import 'dart:convert';
+import 'dart:io';
+
+import 'package:flutter/material.dart';
+
 import '../utils.dart';
 
 class Issue {
@@ -5,7 +10,7 @@ class Issue {
   String summary;
   String url;
   String reporterName;
-  String reporterAvatar;
+  NetworkImage reporterAvatar;
   String ago;
 
   Issue.fromJson(issue)
@@ -16,7 +21,10 @@ class Issue {
             : '',
         reporterName = issue['fields']?['reporter']?['displayName'] ?? '',
         reporterAvatar =
-            issue['fields']?['reporter']?['avatarUrls']?['48x48'] ?? '',
+            issue['fields']?['reporter']?['avatarUrls']?['48x48'] != null
+                ? getReporterAvatar(
+                    issue['fields']?['reporter']?['avatarUrls']?['48x48'])
+                : NetworkImage(''),
         ago = getAgoFromStr(issue['fields']?['created']);
 
   toString() =>
@@ -24,5 +32,14 @@ class Issue {
 
   static String getHostName(String url) {
     return Uri.parse(url).host;
+  }
+
+  static NetworkImage getReporterAvatar(String url) {
+    var u = Platform.environment['ALIGN_JIRA_USERNAME'] ?? '';
+    var p = Platform.environment['ALIGN_JIRA_PASSWORD'] ?? '';
+    return NetworkImage(url, headers: {
+      HttpHeaders.authorizationHeader:
+          'Basic ' + base64Encode(utf8.encode('$u:$p')),
+    });
   }
 }

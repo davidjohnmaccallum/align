@@ -61,7 +61,7 @@ class IssueTile extends StatelessWidget {
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: CircleAvatar(
-                    backgroundImage: NetworkImage(issue.reporterAvatar),
+                    backgroundImage: issue.reporterAvatar,
                   ),
                 ),
                 Column(
