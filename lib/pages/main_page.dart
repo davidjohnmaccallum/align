@@ -1,5 +1,5 @@
 import 'package:align/components/team_widget.dart';
-import 'package:align/models/microservice.dart';
+import 'package:align/models/repo.dart';
 import 'package:align/models/team.dart';
 import 'package:align/pages/settings_page.dart';
 import 'package:align/services/github_service.dart';
@@ -50,8 +50,8 @@ class _MainPageState extends State<MainPage> {
       var issues = jiraService.findIssuesByLabel(repo);
       var pullRequests = gitHubService.listPullRequests(repo, 100);
       var commits = gitHubService.listCommits(repo, 'develop', 100);
-      var microserivce = Microservice(repo, issues, pullRequests, commits);
-      tracking.microservices.add(microserivce);
+      var microserivce = Repo(repo, issues, pullRequests, commits);
+      tracking.repos.add(microserivce);
     }
 
     setState(() {

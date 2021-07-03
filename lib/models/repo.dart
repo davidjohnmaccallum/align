@@ -2,13 +2,13 @@ import 'pull_request.dart';
 import 'commit.dart';
 import 'issue.dart';
 
-class Microservice {
+class Repo {
   String name;
   Future<List<Issue>> issues;
   Future<List<PullRequest>> pullRequests;
   Future<List<Commit>> commits;
 
-  Microservice(this.name, this.issues, this.pullRequests, this.commits);
+  Repo(this.name, this.issues, this.pullRequests, this.commits);
 
   toString() => name;
 }

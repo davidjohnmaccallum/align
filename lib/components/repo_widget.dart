@@ -1,23 +1,23 @@
 import 'package:align/components/commit_tile.dart';
 import 'package:align/models/commit.dart';
 import 'package:align/models/issue.dart';
-import 'package:align/models/microservice.dart';
+import 'package:align/models/repo.dart';
 import 'package:align/models/pull_request.dart';
 
 import 'package:align/components/pull_request_tile.dart';
 import 'package:align/components/issue_tile.dart';
 import 'package:flutter/material.dart';
 
-class MicroserviceWidget extends StatefulWidget {
-  final Microservice microservice;
+class RepoWidget extends StatefulWidget {
+  final Repo repo;
 
-  const MicroserviceWidget(this.microservice, {Key? key}) : super(key: key);
+  const RepoWidget(this.repo, {Key? key}) : super(key: key);
 
   @override
   _RepoWidgetState createState() => _RepoWidgetState();
 }
 
-class _RepoWidgetState extends State<MicroserviceWidget> {
+class _RepoWidgetState extends State<RepoWidget> {
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -34,7 +34,7 @@ class _RepoWidgetState extends State<MicroserviceWidget> {
             children: [
               Container(
                 child: Text(
-                  widget.microservice.name,
+                  widget.repo.name,
                   style: Theme.of(context).textTheme.headline6,
                 ),
                 alignment: Alignment.center,
@@ -51,7 +51,7 @@ class _RepoWidgetState extends State<MicroserviceWidget> {
 
   Widget getIssuesWidget() {
     return FutureBuilder<List<Issue>>(
-      future: widget.microservice.issues,
+      future: widget.repo.issues,
       builder: (context, snapshot) {
         if (snapshot.hasError) {
           return Container(child: Text("${snapshot.error}"));
@@ -69,7 +69,7 @@ class _RepoWidgetState extends State<MicroserviceWidget> {
 
   Widget getPullRequestsWidget() {
     return FutureBuilder<List<PullRequest>>(
-      future: widget.microservice.pullRequests,
+      future: widget.repo.pullRequests,
       builder: (context, snapshot) {
         if (snapshot.hasError) {
           return Container(child: Text("${snapshot.error}"));
@@ -87,7 +87,7 @@ class _RepoWidgetState extends State<MicroserviceWidget> {
 
   Widget getCommitsWidget() {
     return FutureBuilder<List<Commit>>(
-      future: widget.microservice.commits,
+      future: widget.repo.commits,
       builder: (context, snapshot) {
         if (snapshot.hasError) {
           return Container(child: Text("${snapshot.error}"));

@@ -1,10 +1,10 @@
-import 'microservice.dart';
+import 'repo.dart';
 
 class Team {
   String name;
-  List<Microservice> microservices;
+  List<Repo> repos;
 
-  Team(this.name, this.microservices);
+  Team(this.name, this.repos);
 
   toString() => name;
 }

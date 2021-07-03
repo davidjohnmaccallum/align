@@ -1,4 +1,4 @@
-import 'package:align/components/microserivce_widget.dart';
+import 'package:align/components/repo_widget.dart';
 import 'package:align/models/team.dart';
 import 'package:flutter/material.dart';
 
@@ -25,9 +25,7 @@ class TeamWidget extends StatelessWidget {
             ),
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: team.microservices
-                  .map((microservice) => MicroserviceWidget(microservice))
-                  .toList(),
+              children: team.repos.map((repo) => RepoWidget(repo)).toList(),
             ),
           ],
         ),
