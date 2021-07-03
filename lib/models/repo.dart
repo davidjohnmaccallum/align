@@ -1,14 +1,9 @@
-import 'pull_request.dart';
-import 'commit.dart';
-import 'issue.dart';
-
 class Repo {
   String name;
-  Future<List<Issue>> issues;
-  Future<List<PullRequest>> pullRequests;
-  Future<List<Commit>> commits;
 
-  Repo(this.name, this.issues, this.pullRequests, this.commits);
+  Repo(this.name);
 
-  toString() => name;
+  Repo.fromJson(Map<String, dynamic> repo) : name = repo['name'] ?? '';
+
+  String toString() => name;
 }

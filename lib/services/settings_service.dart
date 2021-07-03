@@ -18,35 +18,46 @@ class SettingsService {
       getJiraUsername().isNotEmpty &&
       getJiraPassword().isNotEmpty;
 
+  static const String _GITHUB_TOKEN = 'GITHUB_TOKEN';
+  static const String _GITHUB_ORGANISATION = 'GITHUB_ORGANISATION';
+  static const String _JIRA_USERNAME = 'JIRA_USERNAME';
+  static const String _JIRA_PASSWORD = 'JIRA_PASSWORD';
+
   String getGitHubToken() {
-    return _prefs?.getString('GITHUB_TOKEN') ?? '';
+    return _prefs?.getString(_GITHUB_TOKEN) ?? '';
   }
 
   String getGitHubOrganisation() {
-    return _prefs?.getString('GITHUB_ORGANISATION') ?? '';
+    return _prefs?.getString(_GITHUB_ORGANISATION) ?? '';
   }
 
   String getJiraUsername() {
-    return _prefs?.getString('JIRA_USERNAME') ?? '';
+    return _prefs?.getString(_JIRA_USERNAME) ?? '';
   }
 
   String getJiraPassword() {
-    return _prefs?.getString('JIRA_PASSWORD') ?? '';
+    return _prefs?.getString(_JIRA_PASSWORD) ?? '';
   }
 
   void setGitHubToken(String value) {
-    _prefs?.setString('GITHUB_TOKEN', value);
+    _prefs?.setString(_GITHUB_TOKEN, value);
   }
 
   void setGitHubOrganisation(String value) {
-    _prefs?.setString('GITHUB_ORGANISATION', value);
+    _prefs?.setString(_GITHUB_ORGANISATION, value);
   }
 
   void setJiraUsername(String value) {
-    _prefs?.setString('JIRA_USERNAME', value);
+    _prefs?.setString(_JIRA_USERNAME, value);
   }
 
   void setJiraPassword(String value) {
-    _prefs?.setString('JIRA_PASSWORD', value);
+    _prefs?.setString(_JIRA_PASSWORD, value);
   }
+
+  String toString() => _prefs.toString();
+
+  // String toString() => """$_GITHUB_TOKEN: ${getGitHubToken()}
+  //     $_GITHUB_ORGANISATION: ${getGitHubOrganisation()}
+  //     $_JIRA_USERNAME: ${_prefs.toString()}""";
 }

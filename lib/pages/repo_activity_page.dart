@@ -2,18 +2,16 @@ import 'package:align/components/team_widget.dart';
 import 'package:align/models/repo.dart';
 import 'package:align/models/team.dart';
 import 'package:align/pages/settings_page.dart';
-import 'package:align/services/github_service.dart';
-import 'package:align/services/jira_service.dart';
 import 'package:flutter/material.dart';
 
-class MainPage extends StatefulWidget {
-  MainPage({Key? key}) : super(key: key);
+class RepoActivityPage extends StatefulWidget {
+  RepoActivityPage({Key? key}) : super(key: key);
 
   @override
-  _MainPageState createState() => _MainPageState();
+  _RepoActivityPageState createState() => _RepoActivityPageState();
 }
 
-class _MainPageState extends State<MainPage> {
+class _RepoActivityPageState extends State<RepoActivityPage> {
   var _teams = [];
 
   @override
@@ -23,7 +21,7 @@ class _MainPageState extends State<MainPage> {
   }
 
   void load() async {
-    var trackingRepos = [
+    var trackingRepoNames = [
       'log-api-bff',
       'log-waybill-svc',
       'log-order-injection-svc',
@@ -42,16 +40,13 @@ class _MainPageState extends State<MainPage> {
 
     var tracking = Team('Tracking', []);
 
-    var jiraService = JiraService();
-    var gitHubService = GitHubService();
-
-    for (int i = 0; i < trackingRepos.length; i++) {
-      var repo = trackingRepos[i];
-      var issues = jiraService.findIssuesByLabel(repo);
-      var pullRequests = gitHubService.listPullRequests(repo, 100);
-      var commits = gitHubService.listCommits(repo, 'develop', 100);
-      var microserivce = Repo(repo, issues, pullRequests, commits);
-      tracking.repos.add(microserivce);
+    for (int i = 0; i < trackingRepoNames.length; i++) {
+      var repoName = trackingRepoNames[i];
+      // var issues = jiraService.findIssuesByLabel(repoName);
+      // var pullRequests = gitHubService.listPullRequests(repoName, 100);
+      // var commits = gitHubService.listCommits(repoName, 'develop', 100);
+      var repo = Repo(repoName);
+      tracking.repos.add(repo);
     }
 
     setState(() {

@@ -6,18 +6,23 @@ import 'package:align/services/settings_service.dart';
 import 'package:http/http.dart' as http;
 
 class JiraService {
+  final String _username;
+  final String _password;
+
+  JiraService(this._username, this._password);
+
+  JiraService.fromSettings(SettingsService settings)
+      : _username = settings.getJiraUsername(),
+        _password = settings.getJiraPassword();
+
   Future<List<Issue>> findIssuesByLabel(String label) async {
     try {
-      var settingsService = await SettingsService.getInstance();
-      var username = settingsService.getJiraUsername();
-      var password = settingsService.getJiraPassword();
-
       String jql = Uri.encodeComponent("labels = $label");
       var url = Uri.parse(
           "https://jira.takealot.com/jira/rest/api/2/search?jql=$jql");
       var response = await http.get(url, headers: {
         HttpHeaders.authorizationHeader:
-            _getBasicAuthHeader(username, password),
+            'Basic ' + base64Encode(utf8.encode('$_username:$_password')),
       });
       if (response.statusCode != 200) {
         print("$url returned ${response.statusCode}");
@@ -34,7 +39,4 @@ class JiraService {
       return [];
     }
   }
-
-  String _getBasicAuthHeader(String username, String password) =>
-      'Basic ' + base64Encode(utf8.encode('$username:$password'));
 }

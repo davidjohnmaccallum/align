@@ -3,21 +3,61 @@ import 'dart:io';
 
 import 'package:align/models/commit.dart';
 import 'package:align/models/pull_request.dart';
+import 'package:align/models/repo.dart';
 import 'package:align/services/settings_service.dart';
 import 'package:http/http.dart' as http;
 
 class GitHubService {
+  final String _token;
+  final String _org;
+
+  GitHubService(this._token, this._org);
+
+  GitHubService.fromSettings(SettingsService settings)
+      : _token = settings.getGitHubToken(),
+        _org = settings.getGitHubOrganisation();
+
+  Future<List<Repo>> listReposForOrg() async {
+    List<Repo> result = [];
+    var page = 1;
+    while (true) {
+      var repos = await _listReposForOrg(page);
+      if (repos.length == 0) break;
+      result.addAll(repos);
+      page++;
+    }
+    return result;
+  }
+
+  Future<List<Repo>> _listReposForOrg(int page) async {
+    try {
+      var url = Uri.parse(
+          "https://api.github.com/orgs/$_org/repos?per_page=100&page=$page");
+      var response = await http.get(url, headers: {
+        HttpHeaders.authorizationHeader: "Bearer $_token",
+      });
+      if (response.statusCode != 200) {
+        print("$url returned ${response.statusCode}");
+        return [];
+      }
+      List rawRepos = jsonDecode(response.body);
+      List<Repo> repos =
+          rawRepos.map((rawRepo) => Repo.fromJson(rawRepo)).toList();
+      return repos;
+    } catch (err, stacktrace) {
+      print(err);
+      print(stacktrace);
+      return [];
+    }
+  }
+
   Future<List<Commit>> listCommits(
       String repoName, String branch, int limit) async {
     try {
-      var settingsService = await SettingsService.getInstance();
-      var token = settingsService.getGitHubToken();
-      var org = settingsService.getGitHubOrganisation();
-
       var url = Uri.parse(
-          "https://api.github.com/repos/$org/$repoName/commits?sha=$branch");
+          "https://api.github.com/repos/$_org/$repoName/commits?sha=$branch");
       var response = await http.get(url, headers: {
-        HttpHeaders.authorizationHeader: "Bearer $token",
+        HttpHeaders.authorizationHeader: "Bearer $_token",
       });
       if (response.statusCode != 200) {
         print("$url returned ${response.statusCode}");
@@ -38,14 +78,10 @@ class GitHubService {
 
   Future<List<PullRequest>> listPullRequests(String repoName, int limit) async {
     try {
-      var settingsService = await SettingsService.getInstance();
-      var token = settingsService.getGitHubToken();
-      var org = settingsService.getGitHubOrganisation();
-
       var pullsUrl =
-          Uri.parse("https://api.github.com/repos/$org/$repoName/pulls");
+          Uri.parse("https://api.github.com/repos/$_org/$repoName/pulls");
       var response = await http.get(pullsUrl, headers: {
-        HttpHeaders.authorizationHeader: "Bearer $token",
+        HttpHeaders.authorizationHeader: "Bearer $_token",
       });
       if (response.statusCode != 200) {
         print("$pullsUrl returned ${response.statusCode} and ${response.body}");
@@ -61,6 +97,46 @@ class GitHubService {
       print(err);
       print(stacktrace);
       return [];
+    }
+  }
+
+  Future<String> getReadme(String repoName) async {
+    try {
+      var pullsUrl =
+          Uri.parse("https://api.github.com/repos/$_org/$repoName/readme");
+      var response = await http.get(pullsUrl, headers: {
+        HttpHeaders.authorizationHeader: "Bearer $_token",
+        HttpHeaders.acceptHeader: "application/vnd.github.VERSION.raw"
+      });
+      if (response.statusCode != 200) {
+        print("$pullsUrl returned ${response.statusCode} and ${response.body}");
+        return '';
+      }
+      return response.body;
+    } catch (err, stacktrace) {
+      print(err);
+      print(stacktrace);
+      return '';
+    }
+  }
+
+  Future<String> getFile(String repoName, String path) async {
+    try {
+      var pullsUrl = Uri.parse(
+          "https://api.github.com/repos/$_org/$repoName/contents/$path");
+      var response = await http.get(pullsUrl, headers: {
+        HttpHeaders.authorizationHeader: "Bearer $_token",
+        HttpHeaders.acceptHeader: "application/vnd.github.VERSION.raw"
+      });
+      if (response.statusCode != 200) {
+        print("$pullsUrl returned ${response.statusCode} and ${response.body}");
+        return '';
+      }
+      return response.body;
+    } catch (err, stacktrace) {
+      print(err);
+      print(stacktrace);
+      return '';
     }
   }
 }

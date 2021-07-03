@@ -6,6 +6,9 @@ import 'package:align/models/pull_request.dart';
 
 import 'package:align/components/pull_request_tile.dart';
 import 'package:align/components/issue_tile.dart';
+import 'package:align/services/github_service.dart';
+import 'package:align/services/jira_service.dart';
+import 'package:align/services/settings_service.dart';
 import 'package:flutter/material.dart';
 
 class RepoWidget extends StatefulWidget {
@@ -51,7 +54,7 @@ class _RepoWidgetState extends State<RepoWidget> {
 
   Widget getIssuesWidget() {
     return FutureBuilder<List<Issue>>(
-      future: widget.repo.issues,
+      future: getIssues(widget.repo.name),
       builder: (context, snapshot) {
         if (snapshot.hasError) {
           return Container(child: Text("${snapshot.error}"));
@@ -67,9 +70,15 @@ class _RepoWidgetState extends State<RepoWidget> {
     );
   }
 
+  Future<List<Issue>> getIssues(String repoName) async {
+    SettingsService settings = await SettingsService.getInstance();
+    JiraService jira = JiraService.fromSettings(settings);
+    return jira.findIssuesByLabel(repoName);
+  }
+
   Widget getPullRequestsWidget() {
     return FutureBuilder<List<PullRequest>>(
-      future: widget.repo.pullRequests,
+      future: getPullRequests(widget.repo.name),
       builder: (context, snapshot) {
         if (snapshot.hasError) {
           return Container(child: Text("${snapshot.error}"));
@@ -85,9 +94,15 @@ class _RepoWidgetState extends State<RepoWidget> {
     );
   }
 
+  Future<List<PullRequest>> getPullRequests(String repoName) async {
+    SettingsService settings = await SettingsService.getInstance();
+    GitHubService github = GitHubService.fromSettings(settings);
+    return github.listPullRequests(repoName, 10);
+  }
+
   Widget getCommitsWidget() {
     return FutureBuilder<List<Commit>>(
-      future: widget.repo.commits,
+      future: getCommits(widget.repo.name),
       builder: (context, snapshot) {
         if (snapshot.hasError) {
           return Container(child: Text("${snapshot.error}"));
@@ -101,5 +116,11 @@ class _RepoWidgetState extends State<RepoWidget> {
         );
       },
     );
+  }
+
+  Future<List<Commit>> getCommits(String repoName) async {
+    SettingsService settings = await SettingsService.getInstance();
+    GitHubService github = GitHubService.fromSettings(settings);
+    return github.listCommits(repoName, 'develop', 10);
   }
 }
