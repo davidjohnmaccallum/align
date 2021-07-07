@@ -2,7 +2,9 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:align/models/commit.dart';
+import 'package:align/models/file.dart';
 import 'package:align/models/pull_request.dart';
+import 'package:align/models/readme.dart';
 import 'package:align/models/repo.dart';
 import 'package:align/services/settings_service.dart';
 import 'package:http/http.dart' as http;
@@ -100,7 +102,7 @@ class GitHubService {
     }
   }
 
-  Future<String> getReadme(String repoName) async {
+  Future<Readme> getReadme(String repoName) async {
     try {
       var pullsUrl =
           Uri.parse("https://api.github.com/repos/$_org/$repoName/readme");
@@ -110,17 +112,17 @@ class GitHubService {
       });
       if (response.statusCode != 200) {
         print("$pullsUrl returned ${response.statusCode} and ${response.body}");
-        return '';
+        return Readme(repoName, '');
       }
-      return response.body;
+      return Readme(repoName, response.body);
     } catch (err, stacktrace) {
       print(err);
       print(stacktrace);
-      return '';
+      return Readme(repoName, '');
     }
   }
 
-  Future<String> getFile(String repoName, String path) async {
+  Future<RepoFile> getFile(String repoName, String path) async {
     try {
       var pullsUrl = Uri.parse(
           "https://api.github.com/repos/$_org/$repoName/contents/$path");
@@ -130,13 +132,13 @@ class GitHubService {
       });
       if (response.statusCode != 200) {
         print("$pullsUrl returned ${response.statusCode} and ${response.body}");
-        return '';
+        return RepoFile(repoName, path, '');
       }
-      return response.body;
+      return RepoFile(repoName, path, response.body);
     } catch (err, stacktrace) {
       print(err);
       print(stacktrace);
-      return '';
+      return RepoFile(repoName, path, '');
     }
   }
 }

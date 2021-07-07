@@ -1,3 +1,4 @@
+import 'package:align/pages/readmes_page.dart';
 import 'package:align/pages/repo_activity_page.dart';
 import 'package:align/pages/settings_page.dart';
 import 'package:align/services/settings_service.dart';
@@ -23,7 +24,8 @@ class MyApp extends StatelessWidget {
           if (snapshot.hasData) {
             SettingsService settingsService = snapshot.data!;
             if (settingsService.hasRequiredSettings()) {
-              return RepoActivityPage();
+              // return RepoActivityPage();
+              return ReadmesPage();
             } else {
               return SettingsPage();
             }
