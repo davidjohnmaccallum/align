@@ -42,9 +42,6 @@ class _RepoActivityPageState extends State<RepoActivityPage> {
 
     for (int i = 0; i < trackingRepoNames.length; i++) {
       var repoName = trackingRepoNames[i];
-      // var issues = jiraService.findIssuesByLabel(repoName);
-      // var pullRequests = gitHubService.listPullRequests(repoName, 100);
-      // var commits = gitHubService.listCommits(repoName, 'develop', 100);
       var repo = Repo(repoName);
       tracking.repos.add(repo);
     }
@@ -58,7 +55,7 @@ class _RepoActivityPageState extends State<RepoActivityPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Align"),
+        title: Text("Activity"),
         actions: [
           IconButton(
             icon: Icon(Icons.refresh),
