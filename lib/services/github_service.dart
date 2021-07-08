@@ -2,11 +2,13 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:align/models/commit.dart';
-import 'package:align/models/file.dart';
+import 'package:align/models/repo_file.dart';
+import 'package:align/models/repo_raw_file.dart';
 import 'package:align/models/pull_request.dart';
 import 'package:align/models/readme.dart';
 import 'package:align/models/repo.dart';
 import 'package:align/services/settings_service.dart';
+import 'package:align/utils.dart';
 import 'package:http/http.dart' as http;
 
 class GitHubService {
@@ -114,7 +116,23 @@ class GitHubService {
         print("$pullsUrl returned ${response.statusCode} and ${response.body}");
         return Readme(repoName, '');
       }
-      return Readme(repoName, response.body);
+
+      // Get images from md
+      var images = getMarkdownImages(response.body);
+      // Get the image URLs
+      var serverImages = Map<String, String>();
+      for (var i = 0; i < images.length; i++) {
+        RepoFile? imageFile = await getFile(repoName, images[i]);
+        if (imageFile != null) {
+          serverImages[images[i]] = imageFile.downloadUrl;
+        }
+      }
+      print(serverImages);
+      // Replace images with URLs
+      var markdownWithServerImageUrls =
+          replaceMarkdownImages(response.body, serverImages);
+
+      return Readme(repoName, markdownWithServerImageUrls);
     } catch (err, stacktrace) {
       print(err);
       print(stacktrace);
@@ -122,7 +140,27 @@ class GitHubService {
     }
   }
 
-  Future<RepoFile> getFile(String repoName, String path) async {
+  Future<RepoFile?> getFile(String repoName, String path) async {
+    try {
+      var pullsUrl = Uri.parse(
+          "https://api.github.com/repos/$_org/$repoName/contents/$path");
+      var response = await http.get(pullsUrl, headers: {
+        HttpHeaders.authorizationHeader: "Bearer $_token",
+      });
+      if (response.statusCode != 200) {
+        print("$pullsUrl returned ${response.statusCode} and ${response.body}");
+        return null;
+      }
+      Map<String, dynamic> json = jsonDecode(response.body);
+      return RepoFile.fromJson(json);
+    } catch (err, stacktrace) {
+      print(err);
+      print(stacktrace);
+      return null;
+    }
+  }
+
+  Future<RepoRawFile> getRawFile(String repoName, String path) async {
     try {
       var pullsUrl = Uri.parse(
           "https://api.github.com/repos/$_org/$repoName/contents/$path");
@@ -132,13 +170,13 @@ class GitHubService {
       });
       if (response.statusCode != 200) {
         print("$pullsUrl returned ${response.statusCode} and ${response.body}");
-        return RepoFile(repoName, path, '');
+        return RepoRawFile(repoName, path, '');
       }
-      return RepoFile(repoName, path, response.body);
+      return RepoRawFile(repoName, path, response.body);
     } catch (err, stacktrace) {
       print(err);
       print(stacktrace);
-      return RepoFile(repoName, path, '');
+      return RepoRawFile(repoName, path, '');
     }
   }
 }

@@ -44,7 +44,7 @@ void main() {
 
   test('Get file', () async {
     var gitHubService = GitHubService(token, "davidjohnmaccallum");
-    var file = await gitHubService.getFile('align', '/lib/main.dart');
+    var file = await gitHubService.getRawFile('align', '/lib/main.dart');
     // print(file);
     expect(file, startsWith("import"));
   });

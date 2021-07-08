@@ -1,9 +1,9 @@
-class RepoFile {
+class RepoRawFile {
   String repo;
   String path;
   String contents;
 
-  RepoFile(this.repo, this.path, this.contents);
+  RepoRawFile(this.repo, this.path, this.contents);
 
   String toString() => repo;
 }

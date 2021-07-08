@@ -1,5 +1,5 @@
 import 'package:align/components/team_widget.dart';
-import 'package:align/models/file.dart';
+import 'package:align/models/repo_raw_file.dart';
 import 'package:align/models/readme.dart';
 import 'package:align/models/repo.dart';
 import 'package:align/pages/settings_page.dart';
@@ -20,7 +20,7 @@ class ReadmesPage extends StatefulWidget {
 class _ReadmesPageState extends State<ReadmesPage> {
   var _repos = [];
   List<Readme> _readmes = [];
-  List<RepoFile> _metas = [];
+  List<RepoRawFile> _metas = [];
 
   @override
   void initState() {
@@ -38,8 +38,8 @@ class _ReadmesPageState extends State<ReadmesPage> {
     ];
     List<Readme> readmes =
         await Future.wait(repos.map((repo) => github.getReadme(repo.name)));
-    List<RepoFile> metas = await Future.wait(
-        repos.map((repo) => github.getFile(repo.name, '/metadata/index.yaml')));
+    List<RepoRawFile> metas = await Future.wait(repos
+        .map((repo) => github.getRawFile(repo.name, '/metadata/index.yaml')));
 
     var reposWithMeta = metas
         .where((meta) => meta.contents.isNotEmpty)
@@ -82,7 +82,11 @@ class _ReadmesPageState extends State<ReadmesPage> {
       ),
       body: Container(
         child: Markdown(
-          data: _readmes[0].readme.replaceAll(RegExp(r'\|\s+$'), '+'),
+          data: _readmes.length > 0
+              ? _readmes[0]
+                  .readme
+                  .replaceAll(RegExp(r'\|\s+$', multiLine: true), "|")
+              : "Loading...",
         ),
       ),
     );

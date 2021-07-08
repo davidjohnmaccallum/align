@@ -12,3 +12,24 @@ String getAgoFromStr(String? date) {
     return '';
   }
 }
+
+List<String> getMarkdownImages(String markdown) {
+  var matches = RegExp(r'!\[.*?\]\((.*?)\)').allMatches(markdown);
+  return matches.map((match) => match.group(1) ?? "").toList();
+}
+
+String replaceMarkdownImages(
+  String markdown,
+  Map<String, String> githubImages,
+) {
+  String out = markdown;
+  githubImages.forEach((key, value) {
+    out = out.replaceAllMapped(
+      RegExp(r"!\[(.*?)\]\((.*?)\)"),
+      (match) => match.group(2) == key
+          ? "![${match.group(1)}]($value)"
+          : match.group(0) ?? "",
+    );
+  });
+  return out;
+}
