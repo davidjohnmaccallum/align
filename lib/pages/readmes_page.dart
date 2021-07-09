@@ -1,10 +1,10 @@
 import 'package:align/models/microservice.dart';
-import 'package:align/models/readme.dart';
 import 'package:align/pages/settings_page.dart';
 import 'package:align/services/microservice_service.dart';
 import 'package:align/services/settings_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class ReadmesPage extends StatefulWidget {
   ReadmesPage({Key? key}) : super(key: key);
@@ -15,7 +15,7 @@ class ReadmesPage extends StatefulWidget {
 
 class _ReadmesPageState extends State<ReadmesPage> {
   List<Microservice>? _microservices;
-  Readme? _readme = null;
+  Microservice? _selectedMicroserice;
 
   @override
   void initState() {
@@ -70,12 +70,34 @@ class _ReadmesPageState extends State<ReadmesPage> {
                     ),
                   ),
                   Expanded(
-                    child: Markdown(
-                      // data: _dummyReadme
-                      data: _readme != null
-                          ? _readme!.readme.replaceAll(
-                              RegExp(r'\|\s+$', multiLine: true), "|")
-                          : "",
+                    child: Column(
+                      children: [
+                        Container(
+                          child: Row(
+                            children: [
+                              _selectedMicroserice != null
+                                  ? TextButton(
+                                      onPressed: () {
+                                        launch(_selectedMicroserice!.repo.url);
+                                      },
+                                      child:
+                                          Text(_selectedMicroserice!.repo.url),
+                                    )
+                                  : Container(),
+                            ],
+                          ),
+                        ),
+                        Expanded(
+                          child: Markdown(
+                            // data: _dummyReadme
+                            data: _selectedMicroserice != null
+                                ? _selectedMicroserice!.readme.readme
+                                    .replaceAll(
+                                        RegExp(r'\|\s+$', multiLine: true), "|")
+                                : "",
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ],
@@ -97,7 +119,7 @@ class _ReadmesPageState extends State<ReadmesPage> {
                 ),
                 onTap: () {
                   setState(() {
-                    _readme = it.readme;
+                    _selectedMicroserice = it;
                   });
                 },
               ),
