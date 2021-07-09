@@ -1,9 +1,12 @@
 class Repo {
   String name;
+  String url;
 
-  Repo(this.name);
+  Repo(this.name, this.url);
 
-  Repo.fromJson(Map<String, dynamic> repo) : name = repo['name'] ?? '';
+  Repo.fromJson(Map<String, dynamic> repo)
+      : name = repo['name'] ?? '',
+        url = repo["html_url"] ?? '';
 
   String toString() => name;
 }

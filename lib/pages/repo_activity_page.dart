@@ -42,7 +42,7 @@ class _RepoActivityPageState extends State<RepoActivityPage> {
 
     for (int i = 0; i < trackingRepoNames.length; i++) {
       var repoName = trackingRepoNames[i];
-      var repo = Repo(repoName);
+      var repo = Repo(repoName, "https://github.com/mrdelivery/$repoName");
       tracking.repos.add(repo);
     }
 
