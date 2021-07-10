@@ -116,23 +116,7 @@ class GitHubService {
         print("$pullsUrl returned ${response.statusCode} and ${response.body}");
         return Readme(repoName, '');
       }
-
-      // Get images from md
-      var images = getMarkdownImages(response.body);
-      // Get the image URLs
-      var serverImages = Map<String, String>();
-      for (var i = 0; i < images.length; i++) {
-        RepoFile? imageFile = await getFile(repoName, images[i]);
-        if (imageFile != null) {
-          serverImages[images[i]] = imageFile.downloadUrl;
-        }
-      }
-      print(serverImages);
-      // Replace images with URLs
-      var markdownWithServerImageUrls =
-          replaceMarkdownImages(response.body, serverImages);
-
-      return Readme(repoName, markdownWithServerImageUrls);
+      return Readme(repoName, response.body);
     } catch (err, stacktrace) {
       print(err);
       print(stacktrace);
@@ -142,13 +126,14 @@ class GitHubService {
 
   Future<RepoFile?> getFile(String repoName, String path) async {
     try {
-      var pullsUrl = Uri.parse(
+      var url = Uri.parse(
           "https://api.github.com/repos/$_org/$repoName/contents/$path");
-      var response = await http.get(pullsUrl, headers: {
+      print(url);
+      var response = await http.get(url, headers: {
         HttpHeaders.authorizationHeader: "Bearer $_token",
       });
       if (response.statusCode != 200) {
-        print("$pullsUrl returned ${response.statusCode} and ${response.body}");
+        print("$url returned ${response.statusCode} and ${response.body}");
         return null;
       }
       Map<String, dynamic> json = jsonDecode(response.body);

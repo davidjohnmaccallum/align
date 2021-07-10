@@ -1,7 +1,7 @@
-import 'dart:convert';
-
 import 'package:align/models/microservice.dart';
+import 'package:align/models/repo_file.dart';
 import 'package:align/pages/settings_page.dart';
+import 'package:align/services/github_service.dart';
 import 'package:align/services/microservice_service.dart';
 import 'package:align/services/settings_service.dart';
 import 'package:align/services/storage_service.dart';
@@ -9,7 +9,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 
 class ReadmesPage extends StatefulWidget {
   ReadmesPage({Key? key}) : super(key: key);
@@ -92,15 +91,38 @@ class _ReadmesPageState extends State<ReadmesPage> {
   }
 
   buildContent() {
-    // TODO: Make raw.githubusercontent.com imageBuilder
     return Markdown(
       data: _selectedMicroserice != null
           ? _selectedMicroserice!.readme.readme
               .replaceAll(RegExp(r'\|\s+$', multiLine: true), "|")
           : "",
-      imageBuilder: (uri, title, alt) =>
-          Image(image: CachedNetworkImageProvider(uri.toString())),
+      imageBuilder: (uri, title, alt) {
+        return FutureBuilder<String>(
+          future: getGithubImageUrl(_selectedMicroserice?.repo.name, uri),
+          builder: (context, snapshot) {
+            if (snapshot.hasData) {
+              return Image(image: NetworkImage(snapshot.data ?? ""));
+            }
+            if (snapshot.hasError) {
+              return Text("Error loading image: ${snapshot.error}");
+            }
+            return CircularProgressIndicator();
+          },
+        );
+      },
     );
+  }
+
+  Map<String, String> imageUrlCache = {};
+
+  Future<String> getGithubImageUrl(repoName, path) async {
+    String? cachedImageUrl = imageUrlCache["$repoName/$path"];
+    if (cachedImageUrl != null) return cachedImageUrl;
+    var settings = await SettingsService.getInstance();
+    var github = GitHubService.fromSettings(settings);
+    RepoFile? file = await github.getFile(repoName, path.toString());
+    imageUrlCache["$repoName/$path"] = file?.downloadUrl ?? "";
+    return file?.downloadUrl ?? "";
   }
 
   buildContentActionBar() {
