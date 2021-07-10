@@ -1,3 +1,4 @@
+import 'package:align/models/metadata.dart';
 import 'package:align/models/microservice.dart';
 import 'package:align/models/readme.dart';
 import 'package:align/models/repo.dart';
@@ -35,7 +36,7 @@ class MicroserviceService {
       var readme = readmes.firstWhere((readme) => readme.repo == repo.name);
       var rawMeta = _getMetadata(
           metas.firstWhere((element) => element.repo == repo.name));
-      var meta = MicroserviceMetadata.fromYaml(rawMeta);
+      var meta = Metadata.fromYaml(rawMeta);
       var microservice = Microservice(readme, repo, meta);
       microservices.add(microservice);
     }

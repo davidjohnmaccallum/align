@@ -8,5 +8,10 @@ class Repo {
       : name = repo['name'] ?? '',
         url = repo["html_url"] ?? '';
 
+  Map<String, dynamic> toJson() => {
+        'name': name,
+        'url': url,
+      };
+
   String toString() => name;
 }

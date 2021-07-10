@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:align/models/metadata.dart';
 import 'package:align/models/microservice.dart';
 import 'package:align/services/microservice_service.dart';
 import 'package:test/test.dart';
@@ -27,7 +28,7 @@ my-service:
   - another-service
   team: Great""");
     var rawMeta = yaml.values.toList()[0];
-    var meta = MicroserviceMetadata.fromYaml(rawMeta);
+    var meta = Metadata.fromYaml(rawMeta);
     print(meta);
   });
 }

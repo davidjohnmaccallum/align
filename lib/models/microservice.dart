@@ -1,25 +1,25 @@
 import 'package:align/models/readme.dart';
 import 'package:align/models/repo.dart';
-import 'package:yaml/yaml.dart';
+
+import 'metadata.dart';
 
 class Microservice {
   Readme readme;
   Repo repo;
-  MicroserviceMetadata metadata;
-  Microservice(this.readme, this.repo, this.metadata);
-  toString() => repo.name;
-}
+  Metadata metadata;
 
-class MicroserviceMetadata {
-  String description;
-  String team;
-  List<String> dependencies;
-  MicroserviceMetadata.fromYaml(YamlMap metadata)
-      : description = metadata['description'] ?? '',
-        team = metadata['team'] ?? '',
-        dependencies = metadata['service_dependencies'] != null
-            ? metadata['service_dependencies']
-                .map<String>((element) => element.toString())
-                .toList()
-            : [];
+  Microservice(this.readme, this.repo, this.metadata);
+
+  Microservice.fromJson(Map<String, dynamic> json)
+      : readme = Readme.fromJson(json["readme"]),
+        repo = Repo.fromJson(json["repo"]),
+        metadata = Metadata.fromJson(json["metadata"]);
+
+  Map<String, dynamic> toJson() => {
+        'readme': readme.toJson(),
+        'repo': repo.toJson(),
+        'metadata': metadata.toJson(),
+      };
+
+  toString() => repo.name;
 }
