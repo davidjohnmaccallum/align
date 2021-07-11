@@ -10,7 +10,7 @@ class Repo {
 
   Map<String, dynamic> toJson() => {
         'name': name,
-        'url': url,
+        'html_url': url,
       };
 
   String toString() => name;

@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:align/models/microservice.dart';
 import 'package:align/models/repo_file.dart';
 import 'package:align/pages/settings_page.dart';
@@ -5,10 +7,12 @@ import 'package:align/services/github_service.dart';
 import 'package:align/services/microservice_service.dart';
 import 'package:align/services/settings_service.dart';
 import 'package:align/services/storage_service.dart';
+import 'package:align/services/swagger_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:http/http.dart' as http;
 
 class ReadmesPage extends StatefulWidget {
   ReadmesPage({Key? key}) : super(key: key);
@@ -77,11 +81,24 @@ class _ReadmesPageState extends State<ReadmesPage> {
                 children: [
                   buildNav(context),
                   Expanded(
-                    child: Stack(
-                      children: [
-                        buildContentActionBar(),
-                        buildContent(),
-                      ],
+                    child: DefaultTabController(
+                      length: 2,
+                      child: Scaffold(
+                        appBar: AppBar(
+                          title: TabBar(
+                            tabs: [
+                              Tab(text: "Readme"),
+                              Tab(text: "API"),
+                            ],
+                          ),
+                        ),
+                        body: TabBarView(
+                          children: [
+                            buildReadmeContent(),
+                            buildApiContent(),
+                          ],
+                        ),
+                      ),
                     ),
                   ),
                 ],
@@ -90,27 +107,59 @@ class _ReadmesPageState extends State<ReadmesPage> {
     );
   }
 
-  buildContent() {
+  buildReadmeContent() {
+    // return TextButton(onPressed: () => print("Hello"), child: Text("Hello"));
+    if (_selectedMicroserice == null) return Container();
     return Markdown(
-      data: _selectedMicroserice != null
-          ? _selectedMicroserice!.readme.readme
-              .replaceAll(RegExp(r'\|\s+$', multiLine: true), "|")
-          : "",
-      imageBuilder: (uri, title, alt) {
-        return FutureBuilder<String>(
-          future: getGithubImageUrl(_selectedMicroserice?.repo.name, uri),
-          builder: (context, snapshot) {
-            if (snapshot.hasData) {
-              return Image(image: NetworkImage(snapshot.data ?? ""));
-            }
-            if (snapshot.hasError) {
-              return Text("Error loading image: ${snapshot.error}");
-            }
-            return CircularProgressIndicator();
-          },
-        );
+      data: _selectedMicroserice!.readme.readme
+          .replaceAll(RegExp(r'\|\s+$', multiLine: true), "|"),
+      imageBuilder: githubImageBuilder,
+      onTapLink: (text, href, title) => launch(href.toString()),
+    );
+  }
+
+  buildApiContent() {
+    if (_selectedMicroserice == null) return Container();
+    return FutureBuilder<Map<String, dynamic>?>(
+      future: _getSwagger(_selectedMicroserice!.swaggerUrl),
+      builder: (context, swagger) {
+        if (swagger.hasData) {
+          var swaggerService = SwaggerService();
+          return swagger.data != null
+              ? Markdown(
+                  data: swaggerService.toMarkdown(swagger.data!),
+                  imageBuilder: githubImageBuilder,
+                )
+              : Container();
+        }
+        if (swagger.hasError) {
+          return Center(child: Text("Error: ${swagger.error}"));
+        }
+        return Container();
       },
     );
+  }
+
+  Widget githubImageBuilder(uri, title, alt) {
+    return FutureBuilder<String>(
+      future: getGithubImageUrl(_selectedMicroserice?.repo.name, uri),
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          return Image(image: NetworkImage(snapshot.data ?? ""));
+        }
+        if (snapshot.hasError) {
+          return Text("Error loading image: ${snapshot.error}");
+        }
+        return Container();
+      },
+    );
+  }
+
+  Future<Map<String, dynamic>?> _getSwagger(String url) async {
+    var res = await http.get(Uri.parse(url));
+    if (res.statusCode < 300) {
+      return jsonDecode(res.body);
+    }
   }
 
   Map<String, String> imageUrlCache = {};
@@ -157,6 +206,17 @@ class _ReadmesPageState extends State<ReadmesPage> {
 
   buildActions(BuildContext context) {
     return [
+      _selectedMicroserice != null
+          ? IconButton(
+              onPressed: () {
+                launch(_selectedMicroserice!.repo.url);
+              },
+              icon: SvgPicture.asset(
+                'assets/icons/octocat.svg',
+                color: Colors.white,
+              ),
+            )
+          : Container(),
       !_loading
           ? IconButton(
               icon: Icon(Icons.refresh),
