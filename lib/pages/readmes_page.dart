@@ -34,11 +34,20 @@ class _ReadmesPageState extends State<ReadmesPage> {
 
   void load() async {
     print("load");
+    var settings = await SettingsService.getInstance();
+    if (!settings.hasRequiredSettings()) {
+      await Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => SettingsPage()),
+      );
+    }
+
     var storage = await StorageService.getInstance();
     var savedData = storage.microservices;
     if (savedData.length > 0) {
       setState(() {
         _microservices = storage.microservices;
+        _selectedMicroserice = storage.microservices[0];
       });
     } else {
       reload();
@@ -61,6 +70,7 @@ class _ReadmesPageState extends State<ReadmesPage> {
 
     setState(() {
       _microservices = microservices;
+      _selectedMicroserice = storage.microservices[0];
       _loading = false;
     });
   }
@@ -142,10 +152,11 @@ class _ReadmesPageState extends State<ReadmesPage> {
 
   Widget githubImageBuilder(uri, title, alt) {
     return FutureBuilder<String>(
-      future: getGithubImageUrl(_selectedMicroserice?.repo.name, uri),
+      future: getGithubImageBase64(_selectedMicroserice?.repo.name, uri),
       builder: (context, snapshot) {
         if (snapshot.hasData) {
-          return Image(image: NetworkImage(snapshot.data ?? ""));
+          return Image.memory(
+              base64.decode(base64.normalize(snapshot.data ?? "")));
         }
         if (snapshot.hasError) {
           return Text("Error loading image: ${snapshot.error}");
@@ -164,14 +175,17 @@ class _ReadmesPageState extends State<ReadmesPage> {
 
   Map<String, String> imageUrlCache = {};
 
-  Future<String> getGithubImageUrl(repoName, path) async {
+  Future<String> getGithubImageBase64(repoName, path) async {
     String? cachedImageUrl = imageUrlCache["$repoName/$path"];
-    if (cachedImageUrl != null) return cachedImageUrl;
-    var settings = await SettingsService.getInstance();
-    var github = GitHubService.fromSettings(settings);
-    RepoFile? file = await github.getFile(repoName, path.toString());
-    imageUrlCache["$repoName/$path"] = file?.downloadUrl ?? "";
-    return file?.downloadUrl ?? "";
+    if (cachedImageUrl == null) {
+      var settings = await SettingsService.getInstance();
+      var github = GitHubService.fromSettings(settings);
+      RepoFile? file = await github.getFile(repoName, path.toString());
+      print("File: $file");
+      imageUrlCache["$repoName/$path"] =
+          file?.content.replaceAll(RegExp(r"\n"), "") ?? "";
+    }
+    return imageUrlCache["$repoName/$path"]!;
   }
 
   buildContentActionBar() {
@@ -254,6 +268,9 @@ class _ReadmesPageState extends State<ReadmesPage> {
               (it) => ListTile(
                 title: Text(it.repo.name),
                 subtitle: Text(it.readme.purpose),
+                selected: _selectedMicroserice != null
+                    ? _selectedMicroserice?.repo.name == it.repo.name
+                    : false,
                 onTap: () {
                   setState(() {
                     _selectedMicroserice = it;

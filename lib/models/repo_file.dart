@@ -1,8 +1,10 @@
 class RepoFile {
-  String downloadUrl;
+  String content;
+  String encoding;
 
   RepoFile.fromJson(Map<String, dynamic> file)
-      : downloadUrl = file['download_url'];
+      : content = file['content'],
+        encoding = file['encoding'];
 
-  String toString() => "$downloadUrl";
+  String toString() => "$encoding file";
 }

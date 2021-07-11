@@ -137,6 +137,7 @@ class GitHubService {
         return null;
       }
       Map<String, dynamic> json = jsonDecode(response.body);
+      print(json);
       return RepoFile.fromJson(json);
     } catch (err, stacktrace) {
       print(err);
