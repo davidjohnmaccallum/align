@@ -1,6 +1,7 @@
 import 'package:align/services/settings_service.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class SettingsPage extends StatefulWidget {
@@ -15,16 +16,19 @@ class _SettingsPageState extends State<SettingsPage> {
   var _gitHubOrganisationController = TextEditingController();
   var _jiraUsernameController = TextEditingController();
   var _jiraPasswordController = TextEditingController();
-  Future<SettingsService> _settingsService = SettingsService.getInstance();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: FutureBuilder<SettingsService>(
-        future: _settingsService,
+      body: FutureBuilder<List>(
+        future: Future.wait([
+          SettingsService.getInstance(),
+          PackageInfo.fromPlatform(),
+        ]),
         builder: (context, snapshot) {
           if (snapshot.hasData) {
-            var settingsService = snapshot.data!;
+            SettingsService settingsService = snapshot.data?[0];
+            PackageInfo packageInfo = snapshot.data?[1];
             _gitHubTokenController.text = settingsService.getGitHubToken();
             _gitHubOrganisationController.text =
                 settingsService.getGitHubOrganisation();
@@ -47,6 +51,11 @@ class _SettingsPageState extends State<SettingsPage> {
 
             return Stack(
               children: [
+                Positioned(
+                  child: Text("Ver: ${packageInfo.version}"),
+                  bottom: 30,
+                  right: 30,
+                ),
                 Container(
                   margin: const EdgeInsets.all(50.0),
                   child: IconButton(

@@ -173,27 +173,6 @@ class _ReadmesPageState extends State<ReadmesPage> {
     return imageUrlCache["$repoName/$path"]!;
   }
 
-  buildContentActionBar() {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Container(
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.end,
-          children: [
-            _selectedMicroserice != null
-                ? IconButton(
-                    onPressed: () {
-                      launch(_selectedMicroserice!.repo.url);
-                    },
-                    icon: SvgPicture.asset('assets/icons/octocat.svg'),
-                  )
-                : Container(),
-          ],
-        ),
-      ),
-    );
-  }
-
   buildNav(context) {
     return Container(
       width: 300,
