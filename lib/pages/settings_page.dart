@@ -91,21 +91,21 @@ class _SettingsPageState extends State<SettingsPage> {
                             _gitHubOrganisationController,
                             context,
                           ),
-                          buildSetting(
-                            "JIRA Username",
-                            Text("The JIRA username."),
-                            "Enter JIRA username",
-                            _jiraUsernameController,
-                            context,
-                          ),
-                          buildSetting(
-                            "JIRA Password",
-                            Text(
-                                "The JIRA password. Don't worry, this is only stored and used locally to access the JIRA issues for your microservices."),
-                            "Enter JIRA password",
-                            _jiraPasswordController,
-                            context,
-                          ),
+                          // buildSetting(
+                          //   "JIRA Username",
+                          //   Text("The JIRA username."),
+                          //   "Enter JIRA username",
+                          //   _jiraUsernameController,
+                          //   context,
+                          // ),
+                          // buildSetting(
+                          //   "JIRA Password",
+                          //   Text(
+                          //       "The JIRA password. Don't worry, this is only stored and used locally to access the JIRA issues for your microservices."),
+                          //   "Enter JIRA password",
+                          //   _jiraPasswordController,
+                          //   context,
+                          // ),
                         ],
                       ),
                     ),

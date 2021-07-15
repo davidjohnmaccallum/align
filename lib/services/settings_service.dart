@@ -13,10 +13,7 @@ class SettingsService {
   }
 
   bool hasRequiredSettings() =>
-      getGitHubToken().isNotEmpty &&
-      getGitHubOrganisation().isNotEmpty &&
-      getJiraUsername().isNotEmpty &&
-      getJiraPassword().isNotEmpty;
+      getGitHubToken().isNotEmpty && getGitHubOrganisation().isNotEmpty;
 
   static const String _GITHUB_TOKEN = 'GITHUB_TOKEN';
   static const String _GITHUB_ORGANISATION = 'GITHUB_ORGANISATION';

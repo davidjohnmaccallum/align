@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:align/models/microservice.dart';
 import 'package:align/models/repo_file.dart';
 import 'package:align/pages/settings_page.dart';
+import 'package:align/services/feature_flags_service.dart';
 import 'package:align/services/github_service.dart';
 import 'package:align/services/microservice_service.dart';
 import 'package:align/services/settings_service.dart';
@@ -77,6 +78,7 @@ class _ReadmesPageState extends State<ReadmesPage> {
 
   @override
   Widget build(BuildContext context) {
+    var featureFlags = FeatureFlagsService();
     return Scaffold(
       appBar: AppBar(
         title: Text("Readme"),
@@ -91,25 +93,9 @@ class _ReadmesPageState extends State<ReadmesPage> {
                 children: [
                   buildNav(context),
                   Expanded(
-                    child: DefaultTabController(
-                      length: 2,
-                      child: Scaffold(
-                        appBar: AppBar(
-                          title: TabBar(
-                            tabs: [
-                              Tab(text: "Readme"),
-                              Tab(text: "API"),
-                            ],
-                          ),
-                        ),
-                        body: TabBarView(
-                          children: [
-                            buildReadmeContent(),
-                            buildApiContent(),
-                          ],
-                        ),
-                      ),
-                    ),
+                    child: featureFlags.apiDocs
+                        ? buildTabbedContent()
+                        : buildReadmeContent(),
                   ),
                 ],
               ),
@@ -118,7 +104,6 @@ class _ReadmesPageState extends State<ReadmesPage> {
   }
 
   buildReadmeContent() {
-    // return TextButton(onPressed: () => print("Hello"), child: Text("Hello"));
     if (_selectedMicroserice == null) return Container();
     return Markdown(
       data: _selectedMicroserice!.readme.readme
@@ -281,5 +266,27 @@ class _ReadmesPageState extends State<ReadmesPage> {
             .toList(),
       ];
     }).toList();
+  }
+
+  buildTabbedContent() {
+    return DefaultTabController(
+      length: 2,
+      child: Scaffold(
+        appBar: AppBar(
+          title: TabBar(
+            tabs: [
+              Tab(text: "Readme"),
+              Tab(text: "API"),
+            ],
+          ),
+        ),
+        body: TabBarView(
+          children: [
+            buildReadmeContent(),
+            buildApiContent(),
+          ],
+        ),
+      ),
+    );
   }
 }
