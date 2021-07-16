@@ -37,7 +37,7 @@ class MicroserviceService {
       var rawMeta = _getMetadata(
           metas.firstWhere((element) => element.repo == repo.name));
       var meta = Metadata.fromYaml(rawMeta);
-      var swaggerUrl = "http://${repo.name}.gcp.mrdexpress.uat/swagger.json";
+      var swaggerUrl = "http://${repo.name}.gcp.mrdexpress.prod/swagger.json";
       var microservice = Microservice(readme, repo, meta, swaggerUrl);
       microservices.add(microservice);
     }

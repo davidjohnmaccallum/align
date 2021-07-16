@@ -1,3 +1,3 @@
 class FeatureFlagsService {
-  get apiDocs => false;
+  get apiDocs => true;
 }

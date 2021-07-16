@@ -1,7 +1,9 @@
 import 'dart:convert';
 
+import 'package:align/components/api_doc.dart';
 import 'package:align/models/microservice.dart';
 import 'package:align/models/repo_file.dart';
+import 'package:align/models/swagger.dart';
 import 'package:align/pages/settings_page.dart';
 import 'package:align/services/feature_flags_service.dart';
 import 'package:align/services/github_service.dart';
@@ -122,17 +124,12 @@ class _ReadmesPageState extends State<ReadmesPage> {
 
   buildApiContent() {
     if (_selectedMicroserice == null) return Container();
-    return FutureBuilder<Map<String, dynamic>?>(
-      future: _getSwagger(_selectedMicroserice!.swaggerUrl),
+    var swaggerService = SwaggerService();
+    return FutureBuilder<Swagger?>(
+      future: swaggerService.getSwagger(_selectedMicroserice!.swaggerUrl),
       builder: (context, swagger) {
         if (swagger.hasData) {
-          var swaggerService = SwaggerService();
-          return swagger.data != null
-              ? Markdown(
-                  data: swaggerService.toMarkdown(swagger.data!),
-                  imageBuilder: githubImageBuilder,
-                )
-              : Container();
+          return swagger.data != null ? ApiDoc(swagger.data!) : Container();
         }
         if (swagger.hasError) {
           return Center(child: Text("Error: ${swagger.error}"));
@@ -156,13 +153,6 @@ class _ReadmesPageState extends State<ReadmesPage> {
         return Container();
       },
     );
-  }
-
-  Future<Map<String, dynamic>?> _getSwagger(String url) async {
-    var res = await http.get(Uri.parse(url));
-    if (res.statusCode < 300) {
-      return jsonDecode(res.body);
-    }
   }
 
   Map<String, String> imageUrlCache = {};
