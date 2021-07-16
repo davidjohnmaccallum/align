@@ -109,7 +109,14 @@ class _ReadmesPageState extends State<ReadmesPage> {
       data: _selectedMicroserice!.readme.readme
           .replaceAll(RegExp(r'\|\s+$', multiLine: true), "|"),
       imageBuilder: githubImageBuilder,
-      onTapLink: (text, href, title) => launch(href.toString()),
+      onTapLink: ((text, href, title) {
+        if (href == null) return;
+        if (href.startsWith("http")) {
+          launch(href.toString());
+        } else {
+          launch("${_selectedMicroserice!.repo.url}/tree/master/$href");
+        }
+      }),
     );
   }
 

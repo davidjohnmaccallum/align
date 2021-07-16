@@ -11,6 +11,12 @@
       "args": ["-d", "chrome","--web-port", "8080"]
     },
     {
+      "name": "macos",
+      "request": "launch",
+      "type": "dart",
+      "args": ["-d", "macos"]
+    },
+    {
       "name": "align (profile mode)",
       "request": "launch",
       "type": "dart",
