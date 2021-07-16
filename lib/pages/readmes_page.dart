@@ -227,6 +227,7 @@ class _ReadmesPageState extends State<ReadmesPage> {
             .where((it) => it.metadata.team == team)
             .map(
               (it) => ListTile(
+                leading: getLeadingIcon(it),
                 title: Text(it.repo.name),
                 subtitle: Text(it.readme.purpose),
                 selected: _selectedMicroserice != null
@@ -242,6 +243,20 @@ class _ReadmesPageState extends State<ReadmesPage> {
             .toList(),
       ];
     }).toList();
+  }
+
+  getLeadingIcon(Microservice it) {
+    print(it.metadata.serviceType);
+//    return Icon(Icons.dashboard);
+    Map<String, Icon> icons = {
+      "service": Icon(Icons.filter_tilt_shift),
+      "dashboard": Icon(Icons.dashboard),
+      "producer": Icon(Icons.send),
+      "android": Icon(Icons.android),
+      "bff": Icon(Icons.door_front)
+    };
+    if (!icons.containsKey(it.metadata.serviceType)) return Icon(Icons.help);
+    return icons[it.metadata.serviceType];
   }
 
   buildTabbedContent() {
