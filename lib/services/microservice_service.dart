@@ -21,7 +21,7 @@ class MicroserviceService {
     List<Repo> repos = await _github.listReposForOrg();
     // Filter non microservices
     List<RepoRawFile> metas = await Future.wait(repos
-        .map((repo) => _github.getRawFile(repo.name, '/metadata/index.yaml')));
+        .map((repo) => _github.getRawFile(repo.name, 'metadata/index.yaml')));
     List<Repo> reposWithMeta = metas
         .where((meta) => meta.contents.isNotEmpty)
         .map((meta) => repos.firstWhere((repo) => repo.name == meta.repo))

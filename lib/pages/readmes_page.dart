@@ -15,7 +15,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:http/http.dart' as http;
 
 class ReadmesPage extends StatefulWidget {
   ReadmesPage({Key? key}) : super(key: key);
@@ -26,7 +25,7 @@ class ReadmesPage extends StatefulWidget {
 
 class _ReadmesPageState extends State<ReadmesPage> {
   List<Microservice> _microservices = [];
-  Microservice? _selectedMicroserice;
+  Microservice? _selectedMicroservice;
   bool _loading = false;
 
   @override
@@ -46,11 +45,9 @@ class _ReadmesPageState extends State<ReadmesPage> {
     }
 
     var storage = await StorageService.getInstance();
-    var savedData = storage.microservices;
-    if (savedData.length > 0) {
+    if (storage.microservices.length > 0) {
       setState(() {
         _microservices = storage.microservices;
-        _selectedMicroserice = storage.microservices[0];
       });
     } else {
       reload();
@@ -73,7 +70,6 @@ class _ReadmesPageState extends State<ReadmesPage> {
 
     setState(() {
       _microservices = microservices;
-      _selectedMicroserice = storage.microservices[0];
       _loading = false;
     });
   }
@@ -86,6 +82,9 @@ class _ReadmesPageState extends State<ReadmesPage> {
         title: Text("Readme"),
         actions: buildActions(context),
       ),
+      drawer: Drawer(
+        child: buildDrawerContents(context),
+      ),
       body: _microservices.length == 0 && _loading
           ? Center(
               child: CircularProgressIndicator(),
@@ -93,7 +92,6 @@ class _ReadmesPageState extends State<ReadmesPage> {
           : Container(
               child: Row(
                 children: [
-                  buildNav(context),
                   Expanded(
                     child: featureFlags.apiDocs
                         ? buildTabbedContent()
@@ -106,9 +104,14 @@ class _ReadmesPageState extends State<ReadmesPage> {
   }
 
   buildReadmeContent() {
-    if (_selectedMicroserice == null) return Container();
+    if (_selectedMicroservice == null)
+      return Center(
+          child: Text(
+        "Choose a service to see readme.",
+        style: Theme.of(context).textTheme.headline4,
+      ));
     return Markdown(
-      data: _selectedMicroserice!.readme.readme
+      data: _selectedMicroservice!.readme.readme
           .replaceAll(RegExp(r'\|\s+$', multiLine: true), "|"),
       imageBuilder: githubImageBuilder,
       onTapLink: ((text, href, title) {
@@ -116,17 +119,17 @@ class _ReadmesPageState extends State<ReadmesPage> {
         if (href.startsWith("http")) {
           launch(href.toString());
         } else {
-          launch("${_selectedMicroserice!.repo.url}/tree/master/$href");
+          launch("${_selectedMicroservice!.repo.url}/tree/master/$href");
         }
       }),
     );
   }
 
   buildApiContent() {
-    if (_selectedMicroserice == null) return Container();
+    if (_selectedMicroservice == null) return Container();
     var swaggerService = SwaggerService();
     return FutureBuilder<Swagger?>(
-      future: swaggerService.getSwagger(_selectedMicroserice!.swaggerUrl),
+      future: swaggerService.getSwagger(_selectedMicroservice!.swaggerUrl),
       builder: (context, swagger) {
         if (swagger.hasData) {
           return swagger.data != null ? ApiDoc(swagger.data!) : Container();
@@ -141,7 +144,7 @@ class _ReadmesPageState extends State<ReadmesPage> {
 
   Widget githubImageBuilder(uri, title, alt) {
     return FutureBuilder<String>(
-      future: getGithubImageBase64(_selectedMicroserice?.repo.name, uri),
+      future: getGithubImageBase64(_selectedMicroservice?.repo.name, uri),
       builder: (context, snapshot) {
         if (snapshot.hasData) {
           return Image.memory(
@@ -170,21 +173,46 @@ class _ReadmesPageState extends State<ReadmesPage> {
     return imageUrlCache["$repoName/$path"]!;
   }
 
-  buildNav(context) {
-    return Container(
-      width: 300,
-      child: ListView(
-        children: buildNavItems(context),
-      ),
+  buildDrawerContents(context) {
+    var teams = _microservices.map((it) => it.metadata.team).toSet().toList();
+    return ListView(
+      children: teams.expand((team) {
+        return [
+          ListTile(
+            title: Text(
+              team,
+              style: Theme.of(context).textTheme.headline6,
+            ),
+          ),
+          ..._microservices
+              .where((it) => it.metadata.team == team)
+              .map(
+                (it) => ListTile(
+                  leading: getLeadingIcon(it),
+                  title: Text(it.repo.name),
+                  subtitle: Text(it.readme.purpose),
+                  selected: _selectedMicroservice != null
+                      ? _selectedMicroservice?.repo.name == it.repo.name
+                      : false,
+                  onTap: () {
+                    setState(() {
+                      _selectedMicroservice = it;
+                    });
+                  },
+                ),
+              )
+              .toList(),
+        ];
+      }).toList(),
     );
   }
 
   buildActions(BuildContext context) {
     return [
-      _selectedMicroserice != null
+      _selectedMicroservice != null
           ? IconButton(
               onPressed: () {
-                launch(_selectedMicroserice!.repo.url);
+                launch(_selectedMicroservice!.repo.url);
               },
               icon: SvgPicture.asset(
                 'assets/icons/octocat.svg',
@@ -199,7 +227,19 @@ class _ReadmesPageState extends State<ReadmesPage> {
                 reload();
               },
             )
-          : Container(),
+          : Container(
+              width: 40,
+              child: Center(
+                child: SizedBox(
+                  height: 14,
+                  width: 14,
+                  child: CircularProgressIndicator(
+                    valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                    strokeWidth: 3,
+                  ),
+                ),
+              ),
+            ),
       IconButton(
         icon: Icon(Icons.settings),
         onPressed: () {
@@ -212,42 +252,7 @@ class _ReadmesPageState extends State<ReadmesPage> {
     ];
   }
 
-  buildNavItems(context) {
-    var teams = _microservices.map((it) => it.metadata.team).toSet().toList();
-
-    return teams.expand((team) {
-      return [
-        ListTile(
-          title: Text(
-            team,
-            style: Theme.of(context).textTheme.headline6,
-          ),
-        ),
-        ..._microservices
-            .where((it) => it.metadata.team == team)
-            .map(
-              (it) => ListTile(
-                leading: getLeadingIcon(it),
-                title: Text(it.repo.name),
-                subtitle: Text(it.readme.purpose),
-                selected: _selectedMicroserice != null
-                    ? _selectedMicroserice?.repo.name == it.repo.name
-                    : false,
-                onTap: () {
-                  setState(() {
-                    _selectedMicroserice = it;
-                  });
-                },
-              ),
-            )
-            .toList(),
-      ];
-    }).toList();
-  }
-
   getLeadingIcon(Microservice it) {
-    print(it.metadata.serviceType);
-//    return Icon(Icons.dashboard);
     Map<String, Icon> icons = {
       "service": Icon(Icons.filter_tilt_shift),
       "dashboard": Icon(Icons.dashboard),
