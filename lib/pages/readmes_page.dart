@@ -104,12 +104,7 @@ class _ReadmesPageState extends State<ReadmesPage> {
   }
 
   buildReadmeContent() {
-    if (_selectedMicroservice == null)
-      return Center(
-          child: Text(
-        "Choose a service to see readme.",
-        style: Theme.of(context).textTheme.headline4,
-      ));
+    if (_selectedMicroservice == null) return buildDrawerContents(context);
     return Markdown(
       data: _selectedMicroservice!.readme.readme
           .replaceAll(RegExp(r'\|\s+$', multiLine: true), "|"),
