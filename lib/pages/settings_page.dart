@@ -14,8 +14,6 @@ class SettingsPage extends StatefulWidget {
 class _SettingsPageState extends State<SettingsPage> {
   var _gitHubTokenController = TextEditingController();
   var _gitHubOrganisationController = TextEditingController();
-  var _jiraUsernameController = TextEditingController();
-  var _jiraPasswordController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -32,8 +30,6 @@ class _SettingsPageState extends State<SettingsPage> {
             _gitHubTokenController.text = settingsService.getGitHubToken();
             _gitHubOrganisationController.text =
                 settingsService.getGitHubOrganisation();
-            _jiraUsernameController.text = settingsService.getJiraUsername();
-            _jiraPasswordController.text = settingsService.getJiraPassword();
 
             _gitHubTokenController.addListener(() {
               settingsService.setGitHubToken(_gitHubTokenController.text);
@@ -41,12 +37,6 @@ class _SettingsPageState extends State<SettingsPage> {
             _gitHubOrganisationController.addListener(() {
               settingsService
                   .setGitHubOrganisation(_gitHubOrganisationController.text);
-            });
-            _jiraUsernameController.addListener(() {
-              settingsService.setJiraUsername(_jiraUsernameController.text);
-            });
-            _jiraPasswordController.addListener(() {
-              settingsService.setJiraPassword(_jiraPasswordController.text);
             });
 
             return Stack(
@@ -100,21 +90,6 @@ class _SettingsPageState extends State<SettingsPage> {
                             _gitHubOrganisationController,
                             context,
                           ),
-                          // buildSetting(
-                          //   "JIRA Username",
-                          //   Text("The JIRA username."),
-                          //   "Enter JIRA username",
-                          //   _jiraUsernameController,
-                          //   context,
-                          // ),
-                          // buildSetting(
-                          //   "JIRA Password",
-                          //   Text(
-                          //       "The JIRA password. Don't worry, this is only stored and used locally to access the JIRA issues for your microservices."),
-                          //   "Enter JIRA password",
-                          //   _jiraPasswordController,
-                          //   context,
-                          // ),
                         ],
                       ),
                     ),

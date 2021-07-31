@@ -1,6 +1,9 @@
 import 'package:align/pages/readmes_page.dart';
 import 'package:flutter/material.dart';
 
+// Switches on dummy data
+bool dummyMode = false;
+
 void main() async {
   runApp(MyApp());
 }

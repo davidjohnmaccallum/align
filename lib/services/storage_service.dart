@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:align/models/microservice.dart';
+import 'package:align/models/readmes.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class StorageService {
@@ -15,13 +15,13 @@ class StorageService {
     return _singleton!;
   }
 
-  static const String _MICROSERVICES = '_MICROSERVICES';
+  static const String _READMES = '_READMES';
 
-  List<Microservice> get microservices {
-    var json = jsonDecode(_prefs?.getString(_MICROSERVICES) ?? '[]');
-    return json.map<Microservice>((it) => Microservice.fromJson(it)).toList();
+  List<XReadme> get readmes {
+    var json = jsonDecode(_prefs?.getString(_READMES) ?? '[]');
+    return json.map<XReadme>((it) => XReadme.fromJson(it)).toList();
   }
 
-  set microservices(List<Microservice> value) =>
-      _prefs?.setString(_MICROSERVICES, jsonEncode(value));
+  set readmes(List<XReadme> value) =>
+      _prefs?.setString(_READMES, jsonEncode(value));
 }
