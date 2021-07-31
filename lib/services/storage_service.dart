@@ -17,11 +17,11 @@ class StorageService {
 
   static const String _READMES = '_READMES';
 
-  List<XReadme> get readmes {
+  List<Readme> get readmes {
     var json = jsonDecode(_prefs?.getString(_READMES) ?? '[]');
-    return json.map<XReadme>((it) => XReadme.fromJson(it)).toList();
+    return json.map<Readme>((it) => Readme.fromJson(it)).toList();
   }
 
-  set readmes(List<XReadme> value) =>
+  set readmes(List<Readme> value) =>
       _prefs?.setString(_READMES, jsonEncode(value));
 }

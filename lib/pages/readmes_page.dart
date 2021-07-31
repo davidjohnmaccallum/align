@@ -18,8 +18,8 @@ class ReadmesPage extends StatefulWidget {
 
 class _ReadmesPageState extends State<ReadmesPage> {
   ReadmeService _service = ReadmeService();
-  XReadmesModel _model = XReadmesModel([]);
-  XReadme? _selectedReadme;
+  ReadmesModel _model = ReadmesModel([]);
+  Readme? _selectedReadme;
   bool _loading = false;
 
   @override
@@ -32,7 +32,7 @@ class _ReadmesPageState extends State<ReadmesPage> {
     var storage = await StorageService.getInstance();
     if (storage.readmes.length > 0) {
       setState(() {
-        _model = XReadmesModel(storage.readmes);
+        _model = ReadmesModel(storage.readmes);
       });
     } else {
       reload();
@@ -47,7 +47,7 @@ class _ReadmesPageState extends State<ReadmesPage> {
     var storage = await StorageService.getInstance();
     storage.readmes = readmes;
     setState(() {
-      _model = XReadmesModel(readmes);
+      _model = ReadmesModel(readmes);
       _loading = false;
     });
   }
@@ -157,7 +157,7 @@ class _ReadmesPageState extends State<ReadmesPage> {
     );
   }
 
-  getSubtitle(XReadme readme) {
+  getSubtitle(Readme readme) {
     return FutureBuilder<String>(
       future: _service.getReadme(readme.repoName, readme.readmePath),
       builder: (context, snapshot) {

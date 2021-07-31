@@ -5,12 +5,11 @@ import 'package:align/models/repo.dart';
 import 'package:align/models/repo_file.dart';
 import 'package:align/models/repo_raw_file.dart';
 import 'package:align/services/github_service.dart';
-import 'package:align/services/storage_service.dart';
 import 'package:yaml/yaml.dart';
 
 class ReadmeService {
-  List<XReadme> dummyReadmes = [
-    XReadme(
+  List<Readme> dummyReadmes = [
+    Readme(
       "Service 1",
       "Team 1",
       "README.md",
@@ -28,7 +27,7 @@ class ReadmeService {
   Excepteur non ullamco duis tempor laborum quis adipisicing voluptate ut excepteur deserunt nulla quis. Culpa sit minim sint sint enim duis et tempor consectetur incididunt. In laborum velit commodo nulla.
   """;
 
-  Future<List<XReadme>> listMicroserviceReadmes() async {
+  Future<List<Readme>> listMicroserviceReadmes() async {
     if (dummyMode) return dummyReadmes;
 
     GitHubService github = GitHubService();
@@ -44,7 +43,7 @@ class ReadmeService {
         .toList();
     print(reposWithMeta);
 
-    List<XReadme> readmes = [];
+    List<Readme> readmes = [];
     for (var repo in reposWithMeta) {
       var rawMeta = _getMetadata(
           metas.firstWhere((element) => element.repo == repo.name));
@@ -55,7 +54,7 @@ class ReadmeService {
       String repoName = repo.name;
       String repoUrl = repo.url;
       String componentType = meta.serviceType ?? "";
-      XReadme readme = XReadme(
+      Readme readme = Readme(
         title,
         team,
         readmePath,

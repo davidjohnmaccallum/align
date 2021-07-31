@@ -1,19 +1,19 @@
-class XReadmesModel {
-  List<XReadme> readmes;
-  XReadmesModel(this.readmes);
+class ReadmesModel {
+  List<Readme> readmes;
+  ReadmesModel(this.readmes);
 }
 
-class XReadme {
+class Readme {
   String title;
   String team;
   String readmePath;
   String repoName;
   String repoUrl;
   String componentType;
-  XReadme(this.title, this.team, this.readmePath, this.repoName, this.repoUrl,
+  Readme(this.title, this.team, this.readmePath, this.repoName, this.repoUrl,
       this.componentType);
 
-  XReadme.fromJson(Map<String, dynamic> json)
+  Readme.fromJson(Map<String, dynamic> json)
       : title = json["title"],
         team = json["team"],
         readmePath = json["readmePath"],
