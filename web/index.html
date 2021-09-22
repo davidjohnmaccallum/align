@@ -24,7 +24,7 @@
   <link rel="apple-touch-icon" href="icons/Icon-192.png">
 
   <!-- Favicon -->
-  <link rel="icon" type="image/png" href="favicon.png"/>
+  <link rel="icon" type="image/png" href="favicon.ico"/>
 
   <title>Readme</title>
   <link rel="manifest" href="manifest.json">
@@ -40,12 +40,14 @@
       left: 50%;
       -ms-transform: translate(-50%, -50%);
       transform: translate(-50%, -50%);
+      color: black;
+      font-family: Arial, Helvetica, sans-serif;
     }
   </style>
 </head>
 <body>
   <div class="loading">
-    Downloading lots of javascript...
+    Loading...
   </div>
   <!-- This script installs service_worker.js to provide PWA functionality to
        application. For more information, see:
@@ -60,8 +62,18 @@
 
   <script src="https://www.gstatic.com/firebasejs/8.6.1/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.6.1/firebase-analytics.js"></script>
-  <script src="./firebase-config.js"></script>
-  <script>firebase.initializeApp(firebaseConfig);</script>
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyCe9JCOt1_-m8Ia1NqXWcLCwI2rqguLDW0",
+      authDomain: "log-readme.firebaseapp.com",
+      projectId: "log-readme",
+      storageBucket: "log-readme.appspot.com",
+      messagingSenderId: "651053676315",
+      appId: "1:651053676315:web:58012c93df4b26588345be",
+      measurementId: "G-5KS2VKXZBJ"
+    };
+    firebase.initializeApp(firebaseConfig);
+  </script>
   <script src="main.dart.js" type="application/javascript"></script>
 </body>
 </html>
