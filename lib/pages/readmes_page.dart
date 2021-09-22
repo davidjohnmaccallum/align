@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:align/models/readmes.dart';
 import 'package:align/pages/settings_page.dart';
+import 'package:align/services/lint_service.dart';
 import 'package:align/services/readme_service.dart';
 import 'package:align/services/storage_service.dart';
 import 'package:flutter/material.dart';
@@ -46,6 +47,7 @@ class _ReadmesPageState extends State<ReadmesPage> {
     var readmes = await _service.listMicroserviceReadmes();
     var storage = await StorageService.getInstance();
     storage.readmes = readmes;
+    _service.flushReadmeCache();
     setState(() {
       _model = ReadmesModel(readmes);
       _loading = false;
@@ -60,13 +62,13 @@ class _ReadmesPageState extends State<ReadmesPage> {
         actions: buildActions(context),
       ),
       drawer: Drawer(
-        child: buildDrawerContents(context),
+        child: buildDrawer(context),
       ),
       body: Container(
         child: Row(
           children: [
             Expanded(
-              child: buildReadmeContent(),
+              child: buildReadme(),
             ),
           ],
         ),
@@ -74,8 +76,8 @@ class _ReadmesPageState extends State<ReadmesPage> {
     );
   }
 
-  buildReadmeContent() {
-    if (_selectedReadme == null) return buildDrawerContents(context);
+  buildReadme() {
+    if (_selectedReadme == null) return buildDrawer(context);
     return FutureBuilder<String>(
       future: _service.getReadme(
           _selectedReadme!.repoName, _selectedReadme!.readmePath),
@@ -90,19 +92,61 @@ class _ReadmesPageState extends State<ReadmesPage> {
             child: CircularProgressIndicator(),
           );
         }
-        return Markdown(
-          data: snapshot.data ?? "",
-          imageBuilder: githubImageBuilder,
-          onTapLink: ((text, href, title) {
-            if (href == null) return;
-            if (href.startsWith("http")) {
-              launch(href.toString());
-            } else {
-              launch("${_selectedReadme!.repoUrl}/tree/master/$href");
-            }
-          }),
+        var linter = LintService();
+        return Column(
+          children: [
+            linter.check(snapshot.data ?? "")
+                ? Container()
+                : buildLinterAdvice(
+                    linter.message(snapshot.data ?? ""), context),
+            Expanded(
+              child: Markdown(
+                data: snapshot.data ?? "",
+                imageBuilder: githubImageBuilder,
+                onTapLink: ((text, href, title) {
+                  if (href == null) return;
+                  if (href.startsWith("http")) {
+                    launch(href.toString());
+                  } else {
+                    launch("${_selectedReadme!.repoUrl}/tree/master/$href");
+                  }
+                }),
+              ),
+            ),
+          ],
         );
       },
+    );
+  }
+
+  Widget buildLinterAdvice(String text, BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        border: Border.all(
+          color: Colors.red,
+          width: 2,
+        ),
+        borderRadius: BorderRadius.circular(12),
+        //  color: Colors.transparent,
+      ),
+      margin: EdgeInsets.all(8),
+      padding: EdgeInsets.all(8),
+      width: MediaQuery.of(context).size.width * 1,
+      child: Row(
+        children: [
+          Expanded(
+            child: Text(
+              text,
+              textAlign: TextAlign.center,
+            ),
+          ),
+          IconButton(
+            onPressed: () => launch(
+                "https://jira.takealot.com/wiki/display/LOG/Service+Documentation"),
+            icon: Icon(Icons.info),
+          ),
+        ],
+      ),
     );
   }
 
@@ -123,41 +167,67 @@ class _ReadmesPageState extends State<ReadmesPage> {
     );
   }
 
-  buildDrawerContents(context) {
+  buildDrawer(context) {
     var teams = _model.readmes.map((it) => it.team).toSet().toList();
     return ListView(
       children: teams.expand((team) {
         return [
-          ListTile(
-            title: Text(
-              team,
-              style: Theme.of(context).textTheme.headline6,
-            ),
-          ),
+          buildDrawerSubtitle(team, context),
           ..._model.readmes
               .where((readme) => readme.team == team)
-              .map(
-                (readme) => ListTile(
-                  leading: getLeadingIcon(readme.componentType),
-                  title: Text(readme.repoName),
-                  subtitle: getSubtitle(readme),
-                  selected: _selectedReadme != null
-                      ? _selectedReadme?.repoName == readme.repoName
-                      : false,
-                  onTap: () {
-                    setState(() {
-                      _selectedReadme = readme;
-                    });
-                  },
-                ),
-              )
+              .map(buildDrawerItem)
               .toList(),
         ];
       }).toList(),
     );
   }
 
-  getSubtitle(Readme readme) {
+  ListTile buildDrawerSubtitle(String team, context) {
+    return ListTile(
+      title: Text(
+        team,
+        style: Theme.of(context).textTheme.headline6,
+      ),
+    );
+  }
+
+  Widget buildDrawerItem(Readme readme) {
+    return ListTile(
+      leading: buildLeadingIcon(readme.componentType),
+      title: Text(readme.repoName),
+      subtitle: buildSubtitle(readme),
+      trailing: buildLinterIcon(readme),
+      selected: _selectedReadme != null
+          ? _selectedReadme?.repoName == readme.repoName
+          : false,
+      onTap: () {
+        setState(() {
+          _selectedReadme = readme;
+        });
+      },
+    );
+  }
+
+  buildLinterIcon(Readme readme) {
+    return FutureBuilder<String>(
+      future: _service.getReadme(readme.repoName, readme.readmePath),
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          var linter = LintService();
+          return linter.check(snapshot.data ?? "")
+              ? Icon(Icons.thumb_up)
+              : Container(
+                  width: 1,
+                );
+        }
+        return Container(
+          width: 1,
+        );
+      },
+    );
+  }
+
+  buildSubtitle(Readme readme) {
     return FutureBuilder<String>(
       future: _service.getReadme(readme.repoName, readme.readmePath),
       builder: (context, snapshot) {
@@ -214,7 +284,7 @@ class _ReadmesPageState extends State<ReadmesPage> {
     ];
   }
 
-  getLeadingIcon(String componentType) {
+  buildLeadingIcon(String componentType) {
     Map<String, Icon> icons = {
       "service": Icon(Icons.filter_tilt_shift),
       "dashboard": Icon(Icons.dashboard),

@@ -67,12 +67,22 @@ class ReadmeService {
     return readmes;
   }
 
+  Map<String, String> _readmeCache = {};
+
+  flushReadmeCache() {
+    _readmeCache = {};
+  }
+
   Future<String> getReadme(String repoName, String readmePath) async {
     if (dummyMode) return dummyReadme;
 
-    var github = GitHubService();
-    var file = await github.getRawFile(repoName, readmePath);
-    return file.contents.replaceAll(RegExp(r'\|\s+$', multiLine: true), "|");
+    if (!_readmeCache.containsKey("$repoName/$readmePath")) {
+      var github = GitHubService();
+      var file = await github.getRawFile(repoName, readmePath);
+      _readmeCache["$repoName/$readmePath"] =
+          file.contents.replaceAll(RegExp(r'\|\s+$', multiLine: true), "|");
+    }
+    return _readmeCache["$repoName/$readmePath"] ?? "";
   }
 
   Map<String, String> _imageUrlCache = {};
