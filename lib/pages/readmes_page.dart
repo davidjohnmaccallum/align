@@ -45,6 +45,7 @@ class _ReadmesPageState extends State<ReadmesPage> {
       _loading = true;
     });
     var readmes = await _service.listMicroserviceReadmes();
+    readmes.sort((a, b) => a.repoName.compareTo(b.repoName));
     var storage = await StorageService.getInstance();
     storage.readmes = readmes;
     _service.flushReadmeCache();
@@ -61,12 +62,19 @@ class _ReadmesPageState extends State<ReadmesPage> {
         title: Text("Readme"),
         actions: buildActions(context),
       ),
-      drawer: Drawer(
-        child: buildDrawer(context),
-      ),
+      // drawer: Drawer(
+      //   child: buildDrawer(context),
+      // ),
       body: Container(
         child: Row(
           children: [
+            Material(
+              elevation: 10,
+              child: Container(
+                width: 300,
+                child: buildDrawer(context),
+              ),
+            ),
             Expanded(
               child: buildReadme(),
             ),
@@ -77,7 +85,16 @@ class _ReadmesPageState extends State<ReadmesPage> {
   }
 
   buildReadme() {
-    if (_selectedReadme == null) return buildDrawer(context);
+    //if (_selectedReadme == null) return buildDrawer(context);
+    if (_selectedReadme == null)
+      return Center(
+        child: Icon(
+          Icons.menu_book,
+          size: 400,
+          color: Colors.grey,
+        ),
+      );
+
     return FutureBuilder<String>(
       future: _service.getReadme(
           _selectedReadme!.repoName, _selectedReadme!.readmePath),
