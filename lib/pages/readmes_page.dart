@@ -307,7 +307,7 @@ class _ReadmesPageState extends State<ReadmesPage> {
       "dashboard": Icon(Icons.dashboard),
       "producer": Icon(Icons.send),
       "android": Icon(Icons.android),
-      "bff": Icon(Icons.door_front)
+      "bff": Icon(Icons.door_front_door)
     };
     if (!icons.containsKey(componentType)) return Icon(Icons.help);
     return icons[componentType];
