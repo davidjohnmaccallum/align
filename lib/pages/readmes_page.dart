@@ -5,6 +5,7 @@ import 'package:align/pages/settings_page.dart';
 import 'package:align/services/lint_service.dart';
 import 'package:align/services/readme_service.dart';
 import 'package:align/services/storage_service.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:flutter_svg/svg.dart';
@@ -22,6 +23,7 @@ class _ReadmesPageState extends State<ReadmesPage> {
   ReadmesModel _model = ReadmesModel([]);
   Readme? _selectedReadme;
   bool _loading = false;
+  FirebaseAnalytics _analytics = FirebaseAnalytics();
 
   @override
   void initState() {
@@ -217,6 +219,12 @@ class _ReadmesPageState extends State<ReadmesPage> {
           ? _selectedReadme?.repoName == readme.repoName
           : false,
       onTap: () {
+        _analytics.logEvent(
+          name: 'screen_view',
+          parameters: {
+            'firebase_screen': readme.repoName,
+          },
+        );
         setState(() {
           _selectedReadme = readme;
         });
@@ -260,6 +268,12 @@ class _ReadmesPageState extends State<ReadmesPage> {
       _selectedReadme != null
           ? IconButton(
               onPressed: () {
+                _analytics.logEvent(
+                  name: 'feature',
+                  parameters: {
+                    'open_github_repo': 1,
+                  },
+                );
                 launch(_selectedReadme!.repoUrl);
               },
               icon: SvgPicture.asset(
@@ -272,6 +286,12 @@ class _ReadmesPageState extends State<ReadmesPage> {
           ? IconButton(
               icon: Icon(Icons.refresh),
               onPressed: () {
+                _analytics.logEvent(
+                  name: 'feature',
+                  parameters: {
+                    'reload': 1,
+                  },
+                );
                 reload();
               },
             )
@@ -291,6 +311,12 @@ class _ReadmesPageState extends State<ReadmesPage> {
       IconButton(
         icon: Icon(Icons.settings),
         onPressed: () {
+          _analytics.logEvent(
+            name: 'feature',
+            parameters: {
+              'settings': 1,
+            },
+          );
           Navigator.push(
             context,
             MaterialPageRoute(builder: (context) => SettingsPage()),
