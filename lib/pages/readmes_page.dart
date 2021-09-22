@@ -213,7 +213,6 @@ class _ReadmesPageState extends State<ReadmesPage> {
       leading: buildLeadingIcon(readme.componentType),
       title: Text(readme.repoName),
       subtitle: buildSubtitle(readme),
-      trailing: buildLinterIcon(readme),
       selected: _selectedReadme != null
           ? _selectedReadme?.repoName == readme.repoName
           : false,
